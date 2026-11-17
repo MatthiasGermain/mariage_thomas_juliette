@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Verset from '../components/Verset.astro';
+import CompteARebours from '../components/CompteARebours.astro';
+import Programme from '../components/Programme.astro';
+import Presence from '../components/Presence.astro';
+import BandeauRepas from '../components/BandeauRepas.astro';
+import Dresscode from '../components/Dresscode.astro';
+import Infos from '../components/Infos.astro';
+import PiedDePage from '../components/PiedDePage.astro';
+---
+
+<Base>
+  <Header />
+  <main>
+    <!-- Ordre de la maquette -->
+    <Hero />
+    <Verset />
+    <CompteARebours />
+    <Programme />
+    <Presence />
+    <BandeauRepas />
+    <Dresscode />
+    <!-- Hors maquette -->
+    <Infos />
+  </main>
+  <PiedDePage />
+</Base>

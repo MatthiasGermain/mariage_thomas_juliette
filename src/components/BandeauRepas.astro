@@ -1,0 +1,96 @@
+---
+import Fenetre from './Fenetre.astro';
+import FormulairePresence from './FormulairePresence.astro';
+import { mariage } from '../data/content';
+---
+
+<section class="repas" aria-labelledby="repas-titre">
+  <div class="texte">
+    <h2 id="repas-titre" class="script titre">Vous êtes invités au repas&nbsp;?</h2>
+    <p class="sous-titre">
+      Merci de confirmer avant le {mariage.dateLimiteRepas.replace(/ \d{4}$/, '')} votre présence en entrant le code reçu
+      sur le faire&#8209;part
+    </p>
+  </div>
+  <button class="code" type="button" data-ouvre="fenetre-repas">Entre le code</button>
+</section>
+
+<Fenetre id="fenetre-repas" titre="Le repas">
+  <p class="intro-fenetre">
+    Entrez le code reçu sur votre faire-part, avant le {mariage.dateLimiteRepas}.
+  </p>
+  <FormulairePresence type="repas" />
+</Fenetre>
+
+<style>
+  .repas {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 2rem clamp(2rem, 8vw, 10rem);
+    padding: clamp(2.5rem, 6vw, 5.5rem) clamp(1.25rem, 8.5vw, 8rem);
+    background: var(--olive);
+  }
+
+  .texte {
+    justify-self: start;
+    text-align: center;
+  }
+
+  .titre {
+    font-size: clamp(2.5rem, 4.6vw, 4rem);
+    line-height: 1.15;
+    color: var(--papier);
+  }
+
+  /* 19px en gras : assez grand pour un contraste abricot sur olive acceptable */
+  .sous-titre {
+    max-width: 34rem;
+    margin: 0.25rem auto 0;
+    font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+    font-weight: 600;
+    line-height: 1.15;
+    color: var(--abricot);
+  }
+
+  .code {
+    width: clamp(16rem, 31vw, 26rem);
+    padding: 1.15rem 1.5rem;
+    border: none;
+    border-radius: 999px;
+    background: var(--creme-amande);
+    color: var(--brun-cendre);
+    font: 500 clamp(1rem, 1.4vw, 1.2rem) / 1 var(--font-corps);
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .code:hover {
+    background: var(--papier);
+  }
+
+  .intro-fenetre {
+    margin: -0.5rem 0 1.25rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 47.99rem) {
+    .repas {
+      grid-template-columns: 1fr;
+      justify-items: center;
+    }
+
+    .texte {
+      justify-self: center;
+    }
+
+    .code {
+      width: min(100%, 22rem);
+    }
+  }
+</style>

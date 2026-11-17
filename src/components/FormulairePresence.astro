@@ -1,0 +1,145 @@
+---
+// Formulaire de confirmation de présence, envoyé à /api/<type> (voir src/lib/rsvp.ts).
+interface Props {
+  type: 'repas' | 'vin-honneur';
+}
+
+const { type } = Astro.props;
+const avecCode = type === 'repas';
+const id = (champ: string) => `${type}-${champ}`;
+---
+
+<form class="formulaire" data-presence={type} novalidate>
+  {
+    avecCode && (
+      <label for={id('code')}>
+        Code reçu sur le faire-part
+        <input id={id('code')} name="code" type="password" required autocomplete="off" />
+      </label>
+    )
+  }
+  <div class="ligne">
+    <label for={id('prenom')}>
+      Prénom
+      <input id={id('prenom')} name="prenom" required maxlength="100" autocomplete="given-name" />
+    </label>
+    <label for={id('nom')}>
+      Nom
+      <input id={id('nom')} name="nom" required maxlength="100" autocomplete="family-name" />
+    </label>
+  </div>
+  <label for={id('personnes')}>
+    Nombre de personnes (vous compris)
+    <input id={id('personnes')} name="personnes" type="number" min="1" max="20" value="1" required />
+  </label>
+
+  <!-- Piège à robots : champ invisible qu'un humain laisse vide. -->
+  <label class="visually-hidden" aria-hidden="true">
+    Ne pas remplir
+    <input name="site" tabindex="-1" autocomplete="off" />
+  </label>
+
+  <button class="bouton" type="submit">Confirmer</button>
+  <p class="message" role="status" aria-live="polite"></p>
+</form>
+
+<script>
+  document.querySelectorAll<HTMLFormElement>('form[data-presence]').forEach((form) => {
+    const message = form.querySelector<HTMLElement>('.message')!;
+    const bouton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form.reportValidity()) return;
+
+      const donnees = Object.fromEntries(new FormData(form));
+      bouton.disabled = true;
+      message.dataset.etat = '';
+      message.textContent = 'Envoi en cours…';
+
+      try {
+        const reponse = await fetch(`/api/${form.dataset.presence}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(donnees),
+        });
+        const corps = await reponse.json().catch(() => ({}));
+        if (!reponse.ok) throw new Error(corps.erreur ?? "L'envoi a échoué, merci de réessayer.");
+
+        form.reset();
+        message.dataset.etat = 'ok';
+        message.textContent = corps.message ?? 'Merci, votre réponse est bien enregistrée !';
+      } catch (erreur) {
+        message.dataset.etat = 'erreur';
+        message.textContent =
+          erreur instanceof Error ? erreur.message : "L'envoi a échoué, merci de réessayer.";
+      } finally {
+        bouton.disabled = false;
+      }
+    });
+  });
+</script>
+
+<style>
+  .formulaire {
+    display: grid;
+    gap: 1rem;
+    text-align: left;
+  }
+
+  .ligne {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 1rem;
+  }
+
+  label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  label {
+    min-width: 0;
+  }
+
+  input {
+    width: 100%;
+    min-width: 0;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--brun-cendre);
+    border-radius: 0.5rem;
+    background: #fffdf9;
+    color: var(--cafe-noir);
+    font: inherit;
+    font-size: 1rem;
+  }
+
+  .bouton {
+    justify-self: center;
+  }
+
+  .bouton:disabled {
+    opacity: 0.6;
+    cursor: wait;
+  }
+
+  .message {
+    min-height: 1.5em;
+    margin: 0;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  .message[data-etat='ok'] {
+    color: var(--olive);
+    font-weight: 600;
+  }
+
+  .message[data-etat='erreur'] {
+    color: #8a3b12;
+    font-weight: 600;
+  }
+</style>

@@ -1,0 +1,77 @@
+---
+// Page type Linktree, à partager (QR code, messages…).
+import Base from '../layouts/Base.astro';
+import { mariage, liens } from '../data/content';
+
+const items = [
+  { href: '/', label: 'Le site du mariage' },
+  { href: '/#presence', label: 'Confirmer ma présence' },
+  { href: liens.formulairePlats, label: "Plat à amener au vin d'honneur", externe: true },
+  { href: liens.covoiturage, label: 'Covoiturage (Togetzer)', externe: true },
+  { href: liens.cagnotte, label: 'Cagnotte', externe: true },
+].filter((i) => i.href);
+---
+
+<Base title={`Liens · ${mariage.maries}`}>
+  <main class="liens rayures">
+    <div class="carte">
+      <img src="/images/logo.png" alt="Monogramme J T, 27 03" width="110" height="110" />
+      <h1 class="script">{mariage.maries}</h1>
+      <p class="surtitre">{mariage.dateAffichee}</p>
+      <ul>
+        {
+          items.map((i) => (
+            <li>
+              <a class="bouton" href={i.href} {...(i.externe ? { target: '_blank', rel: 'noopener' } : {})}>
+                {i.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .liens {
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    padding: 2rem var(--gouttiere);
+  }
+
+  .carte {
+    width: min(100%, 26rem);
+    padding: 2rem 1.5rem;
+    background: var(--creme-clair);
+    box-shadow: 0 10px 30px rgb(51 42 27 / 0.2);
+    text-align: center;
+  }
+
+  img {
+    margin-inline: auto;
+    mix-blend-mode: multiply;
+  }
+
+  h1 {
+    font-size: 3rem;
+    color: var(--olive);
+  }
+
+  p {
+    color: var(--brun-cendre);
+  }
+
+  ul {
+    display: grid;
+    gap: 0.75rem;
+    margin: 1.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .bouton {
+    display: block;
+  }
+</style>

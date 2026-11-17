@@ -1,0 +1,74 @@
+---
+// Fenêtre modale (élément <dialog>) ouverte par tout bouton portant data-ouvre="<id>".
+interface Props {
+  id: string;
+  titre: string;
+}
+
+const { id, titre } = Astro.props;
+---
+
+<dialog id={id} class="fenetre papier" aria-labelledby={`${id}-titre`}>
+  <button class="fermer" type="button" data-ferme aria-label="Fermer">×</button>
+  <h2 id={`${id}-titre`} class="script titre">{titre}</h2>
+  <slot />
+</dialog>
+
+<script>
+  document.addEventListener('click', (event) => {
+    const cible = event.target as HTMLElement;
+
+    const ouvreur = cible.closest<HTMLElement>('[data-ouvre]');
+    if (ouvreur) {
+      document.querySelector<HTMLDialogElement>(`#${ouvreur.dataset.ouvre}`)?.showModal();
+      return;
+    }
+
+    if (cible.closest('[data-ferme]')) {
+      cible.closest('dialog')?.close();
+      return;
+    }
+
+    // Clic sur le fond assombri : on ferme.
+    if (cible instanceof HTMLDialogElement && cible.classList.contains('fenetre')) {
+      const r = cible.getBoundingClientRect();
+      const e = event as MouseEvent;
+      const dehors = e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom;
+      if (dehors) cible.close();
+    }
+  });
+</script>
+
+<style>
+  .fenetre {
+    width: min(100% - 2rem, 30rem);
+    max-height: calc(100dvh - 2rem);
+    padding: clamp(1.5rem, 5vw, 2.5rem);
+    border: none;
+    color: var(--cafe-noir);
+    overflow: auto;
+  }
+
+  .fenetre::backdrop {
+    background: rgb(51 42 27 / 0.55);
+  }
+
+  .titre {
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+    line-height: 1.1;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .fermer {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    border: none;
+    background: none;
+    color: var(--brun-cendre);
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+</style>

@@ -1,0 +1,15 @@
+# Dépendances et build
+node_modules/
+dist/
+.astro/
+.vercel/
+
+# Secrets et données locales
+.env
+.env.*
+!.env.example
+.data/
+
+# Divers
+.DS_Store
+npm-debug.log*

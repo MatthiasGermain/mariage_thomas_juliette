@@ -1,0 +1,198 @@
+---
+// Sections absentes de la maquette : même vocabulaire visuel (rayures, carte papier, scripts).
+import { lieu, liens, logements } from '../data/content';
+---
+
+<section id="lieu" class="lieu rayures">
+  <div class="carte papier">
+    <h2 class="titre-section">Le lieu</h2>
+    <address>
+      <strong class="nom">{lieu.nom}</strong>
+      {lieu.adresse.map((l) => <span>{l}</span>)}
+    </address>
+
+    <ul class="acces">
+      <li><span class="script puce">Parking</span> sur place</li>
+      <li><span class="script puce">Train</span> la gare la plus proche est celle de Metz</li>
+      <li><span class="script puce">Covoiturage</span> proposez ou trouvez une place sur Togetzer</li>
+    </ul>
+
+    <div class="boutons">
+      <a class="bouton" href={lieu.mapsUrl} target="_blank" rel="noopener">Voir sur la carte</a>
+      <a class="bouton" href={liens.covoiturage} target="_blank" rel="noopener">Covoiturage</a>
+    </div>
+  </div>
+</section>
+
+<section id="infos" class="dormir">
+  <h2 class="script titre">Dormir</h2>
+  <p class="consigne">Les possibilités de logement autour du domaine</p>
+  <div class="groupes">
+    {
+      logements.map((g) => (
+        <div class="groupe">
+          <h3 class="groupe-titre">{g.groupe}</h3>
+          <ul class="logements">
+            {g.items.map((l) => (
+              <li>
+                <span class="note">{l.note}</span>
+                <strong class="logement">{l.nom}</strong>
+                {l.ville && <span class="ville script">{l.ville}</span>}
+                <p>{l.description}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .lieu {
+    display: grid;
+    place-items: center;
+    padding: clamp(3.5rem, 7vw, 6rem) var(--gouttiere);
+  }
+
+  .lieu .carte {
+    width: min(100%, 38rem);
+    padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3.5rem);
+    text-align: center;
+    transform: rotate(1.5deg);
+  }
+
+  .lieu .titre-section {
+    font-size: clamp(3.25rem, 7vw, 5.5rem);
+  }
+
+  address {
+    display: grid;
+    margin-top: 0.75rem;
+    font-style: normal;
+    line-height: 1.5;
+  }
+
+  .nom {
+    font-family: var(--font-serif);
+    font-size: clamp(1.3rem, 2.2vw, 1.75rem);
+    text-transform: uppercase;
+    color: var(--brun-cendre);
+    margin-bottom: 0.25rem;
+  }
+
+  .acces {
+    display: grid;
+    gap: 0.35rem;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.95rem;
+  }
+
+  .puce {
+    font-size: 1.6rem;
+    color: var(--olive);
+    margin-right: 0.35rem;
+  }
+
+  .boutons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-top: 1.75rem;
+  }
+
+  .dormir {
+    padding: clamp(3rem, 6vw, 5rem) var(--gouttiere);
+    background: var(--creme-clair);
+    text-align: center;
+  }
+
+  .titre {
+    font-size: clamp(3.5rem, 7vw, 6rem);
+    line-height: 1.2;
+    color: var(--abricot);
+  }
+
+  .consigne,
+  .groupe-titre {
+    font-size: clamp(0.8rem, 1.2vw, 1.05rem);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--brun-cendre);
+  }
+
+  .consigne {
+    margin: 0.75rem 0 0;
+  }
+
+  .groupes {
+    width: min(100%, var(--largeur-max));
+    margin-inline: auto;
+  }
+
+  .groupe {
+    margin-top: clamp(2rem, 4vw, 3rem);
+  }
+
+  .groupe-titre {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: var(--olive);
+    margin-bottom: 1rem;
+  }
+
+  .logements {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .logements li {
+    position: relative;
+    display: grid;
+    align-content: start;
+    flex: 0 1 22rem;
+    padding: 1.5rem 1.25rem 1.25rem;
+    border-radius: 1.5rem;
+    background: var(--creme-amande);
+  }
+
+  .logement {
+    font-family: var(--font-serif);
+    font-size: 1.15rem;
+    line-height: 1.2;
+    color: var(--brun-cendre);
+  }
+
+  .ville {
+    font-size: 1.6rem;
+    line-height: 1.2;
+    color: var(--olive);
+  }
+
+  .note {
+    position: absolute;
+    top: -0.75rem;
+    right: 1rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    background: var(--abricot);
+    color: var(--cafe-noir);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  .logements p {
+    margin: 0.5rem 0 0;
+    font-size: 0.9rem;
+  }
+</style>

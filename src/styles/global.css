@@ -1,0 +1,175 @@
+/* Charte du mariage — voir Identité visuelle/Charte mariage.pdf et la maquette du site */
+
+@font-face {
+  font-family: 'Americana';
+  src: url('/fonts/americana-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Americana';
+  src: url('/fonts/americana-italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* Palette */
+  --cafe-noir: #332a1b;
+  --brun-cendre: #5b4734;
+  --abricot: #e1973d;
+  --creme-amande: #e7d6c2;
+  --olive: #6b734f;
+  /* Teintes relevées sur la maquette */
+  --creme-clair: #faf0e4;
+  --papier: #fff6ec;
+  --sauge: #b3b295;
+
+  /* Polices. Sloop (script) n'est pas fournie : Pinyon Script la remplace en attendant. */
+  --font-script: 'Sloop', 'Pinyon Script', cursive;
+  /* Serif fine (date du photomaton) */
+  --font-titre: 'Americana', Georgia, serif;
+  /* Serif grasse des sous-titres et du compte à rebours dans la maquette */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-corps: 'Montserrat', system-ui, sans-serif;
+
+  --largeur-max: 72rem;
+  --gouttiere: clamp(1rem, 4vw, 2.5rem);
+  /* Largeur d'une rayure : 76px sur la maquette (1366px de large) */
+  --rayure: clamp(2.25rem, 5.6vw, 6rem);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--creme-clair);
+  color: var(--cafe-noir);
+  font-family: var(--font-corps);
+  font-size: 1rem;
+  line-height: 1.6;
+  /* Playfair a des chiffres « elzéviriens » par défaut ; la maquette utilise des chiffres alignés */
+  font-variant-numeric: lining-nums;
+}
+
+/* Grain papier léger, comme sur la maquette */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.07;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.script {
+  font-family: var(--font-script);
+  font-weight: 400;
+}
+
+.titre-section {
+  font-family: var(--font-script);
+  font-size: clamp(3.25rem, 8vw, 7rem);
+  line-height: 1.2;
+  color: var(--olive);
+  text-align: center;
+}
+
+.surtitre {
+  font-family: var(--font-corps);
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.conteneur {
+  width: min(100% - 2 * var(--gouttiere), var(--largeur-max));
+  margin-inline: auto;
+}
+
+.section {
+  padding-block: clamp(3rem, 7vw, 5.5rem);
+}
+
+/* Fond à rayures verticales sauge / crème, comme le save the date */
+.rayures {
+  background-color: var(--creme-clair);
+  background-image: linear-gradient(90deg, var(--sauge) 50%, transparent 50%);
+  background-size: calc(2 * var(--rayure)) 100%;
+  background-position: calc(var(--rayure) * 0.35) 0;
+}
+
+/* Carte papier (RSVP, lieu, fenêtres des formulaires) */
+.papier {
+  background: var(--papier);
+  box-shadow: 0 12px 35px rgb(51 42 27 / 0.22);
+}
+
+.bouton {
+  display: inline-block;
+  padding: 0.85rem 1.6rem;
+  border: none;
+  border-radius: 999px;
+  background: var(--abricot);
+  /* Café noir plutôt que crème (maquette) : seul texte lisible en petit sur l'abricot (WCAG AA) */
+  color: var(--cafe-noir);
+  font: 600 clamp(0.8rem, 1.1vw, 0.95rem) / 1 var(--font-corps);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.bouton:hover {
+  background: var(--brun-cendre);
+  color: var(--creme-clair);
+}
+
+.bouton:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--olive);
+  outline-offset: 3px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

@@ -1,0 +1,100 @@
+---
+import { mariage } from '../data/content';
+
+const unites = [
+  { cle: 'jours', label: 'Jours' },
+  { cle: 'heures', label: 'Heures' },
+  { cle: 'minutes', label: 'Minutes' },
+  { cle: 'secondes', label: 'Secondes' },
+];
+---
+
+<section class="compte" aria-label="Compte à rebours">
+  <p class="script intro">Le grand jour approche dans…</p>
+  <div class="cases" data-cible={mariage.dateCeremonie}>
+    {
+      unites.map((u) => (
+        <div class="case">
+          <span class="valeur" data-unite={u.cle}>–</span>
+          <span class="label">{u.label}</span>
+        </div>
+      ))
+    }
+  </div>
+</section>
+
+<script>
+  const bloc = document.querySelector<HTMLElement>('.compte .cases');
+  if (bloc?.dataset.cible) {
+    const cible = new Date(bloc.dataset.cible).getTime();
+    const champs = Object.fromEntries(
+      [...bloc.querySelectorAll<HTMLElement>('[data-unite]')].map((el) => [el.dataset.unite, el]),
+    );
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const maj = () => {
+      const reste = Math.max(0, cible - Date.now());
+      const s = Math.floor(reste / 1000);
+      champs.jours.textContent = String(Math.floor(s / 86400));
+      champs.heures.textContent = pad(Math.floor((s % 86400) / 3600));
+      champs.minutes.textContent = pad(Math.floor((s % 3600) / 60));
+      champs.secondes.textContent = pad(s % 60);
+      if (reste === 0) clearInterval(timer);
+    };
+    const timer = setInterval(maj, 1000);
+    maj();
+  }
+</script>
+
+<style>
+  .compte {
+    background: var(--creme-amande);
+    padding: clamp(1.75rem, 3vw, 2.5rem) var(--gouttiere) clamp(2rem, 3.5vw, 3rem);
+    text-align: center;
+  }
+
+  .intro {
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    line-height: 1.2;
+    color: var(--abricot);
+    margin: 0 0 clamp(0.75rem, 1.5vw, 1.25rem);
+  }
+
+  .cases {
+    display: flex;
+    justify-content: center;
+  }
+
+  .case {
+    display: grid;
+    justify-items: center;
+    gap: 0.5rem;
+    width: clamp(4.25rem, 13.5vw, 11.5rem);
+    padding-block: 0.2rem;
+  }
+
+  .case + .case {
+    border-left: 2px solid var(--brun-cendre);
+  }
+
+  .valeur {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: clamp(2.25rem, 6.6vw, 5.6rem);
+    line-height: 1;
+    color: var(--olive);
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  .case:last-child .valeur {
+    color: var(--abricot);
+  }
+
+  .label {
+    font-size: clamp(0.6rem, 1.2vw, 1rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brun-cendre);
+    opacity: 0.85;
+  }
+</style>

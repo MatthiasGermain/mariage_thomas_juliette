@@ -1,0 +1,71 @@
+---
+import { couleurs } from '../data/content';
+---
+
+<section class="dresscode" aria-labelledby="dresscode-titre">
+  <h2 id="dresscode-titre" class="script titre">Dresscode</h2>
+  <p class="consigne">Si vous voulez vous accorder au thème du mariage, voici les couleurs mises en avant :</p>
+  <ul class="pastilles">
+    {
+      couleurs.map((c) => (
+        <li style={`--c: ${c.hex}`} title={c.nom}>
+          <span class="visually-hidden">{c.nom}</span>
+        </li>
+      ))
+    }
+  </ul>
+  <p class="facultatif">Ce n'est bien sûr pas obligatoire !</p>
+</section>
+
+<style>
+  .dresscode {
+    padding: clamp(3rem, 5vw, 4rem) var(--gouttiere) clamp(3rem, 6vw, 5rem);
+    background: var(--creme-amande);
+    text-align: center;
+  }
+
+  .titre {
+    font-size: clamp(3.5rem, 7vw, 6rem);
+    line-height: 1.2;
+    color: var(--abricot);
+  }
+
+  .consigne {
+    max-width: 70rem;
+    margin: clamp(1rem, 2vw, 1.75rem) auto 0;
+    font-size: clamp(0.8rem, 1.2vw, 1.05rem);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--brun-cendre);
+  }
+
+  .pastilles {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(0.5rem, 0.8vw, 0.75rem);
+    margin: clamp(1.75rem, 3vw, 2.5rem) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pastilles li {
+    width: clamp(3.5rem, 6.8vw, 5.8rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--c);
+  }
+
+  /* La pastille crème se confond avec le fond : liseré brun, comme sur la maquette */
+  .pastilles li:nth-child(4) {
+    border: 1px solid var(--brun-cendre);
+  }
+
+  .facultatif {
+    margin: 1.5rem 0 0;
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--brun-cendre);
+  }
+</style>

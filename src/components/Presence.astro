@@ -1,0 +1,152 @@
+---
+import Fenetre from './Fenetre.astro';
+import FormulairePresence from './FormulairePresence.astro';
+import { invitation, liens } from '../data/content';
+---
+
+<!-- Bloc RSVP de la maquette : carte trombonée sur la photo du champ, photo du couple sur fond abricot. -->
+<section id="presence" class="presence">
+  <div class="moitie champ">
+    <div class="carte papier">
+      <svg class="trombone" viewBox="0 0 34 112" aria-hidden="true">
+        <path
+          d="M10,30 V96 a8,8 0 0 0 16,0 V12 a11,11 0 0 0 -22,0 V88 a14,14 0 0 0 28,0 V30"
+          fill="none"
+          stroke="#9a968f"
+          stroke-width="3"
+          stroke-linecap="round"></path>
+      </svg>
+
+      <h2 class="script rsvp">Rsvp</h2>
+      <p class="accroche">Votre présence est le plus beau des cadeaux.</p>
+      <p class="texte">{invitation.texte}</p>
+      {
+        liens.cagnotte && (
+          <p class="texte">
+            Si vous voulez nous aider dans notre début de vie à deux, une{' '}
+            <a href={liens.cagnotte} target="_blank" rel="noopener">
+              cagnotte
+            </a>{' '}
+            est ouverte.
+          </p>
+        )
+      }
+      <button class="bouton" type="button" data-ouvre="fenetre-vin">Confirme ta présence</button>
+    </div>
+  </div>
+
+  <div class="moitie couple">
+    <img
+      class="photo-couple"
+      src="/images/couple.jpg"
+      alt="Juliette et Thomas dans un champ au coucher du soleil"
+      width="800"
+      height="1067"
+      loading="lazy"
+    />
+  </div>
+</section>
+
+<Fenetre id="fenetre-vin" titre="Confirme ta présence">
+  <p class="intro-fenetre">À la cérémonie et au vin d'honneur participatif.</p>
+  <FormulairePresence type="vin-honneur" />
+</Fenetre>
+
+<style>
+  .presence {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: clamp(32rem, 57vw, 49rem);
+  }
+
+  .moitie {
+    display: grid;
+    place-items: center;
+    padding: clamp(2.5rem, 6vw, 5rem) var(--gouttiere);
+  }
+
+  /* Photo du champ (partie de la photo sans le couple) */
+  .champ {
+    background: #a88b5c url('/images/champ.jpg') center 35% / cover no-repeat;
+  }
+
+  .couple {
+    background: #e3a04f;
+  }
+
+  .photo-couple {
+    width: clamp(10rem, 20vw, 17.5rem);
+    height: auto;
+    aspect-ratio: 278 / 340;
+    object-fit: cover;
+    object-position: center 30%;
+  }
+
+  .carte {
+    position: relative;
+    width: clamp(17rem, 29vw, 25rem);
+    min-height: clamp(26rem, 44vw, 37.5rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 3.5vw, 3rem) clamp(2rem, 4vw, 3.5rem);
+    text-align: center;
+    transform: rotate(-2.6deg);
+  }
+
+  .trombone {
+    position: absolute;
+    top: -2.25rem;
+    left: 1.75rem;
+    width: 1.9rem;
+  }
+
+  .rsvp {
+    font-size: clamp(3.5rem, 6vw, 5.5rem);
+    line-height: 1;
+    color: #111;
+  }
+
+  .accroche {
+    margin: clamp(1.5rem, 3vw, 2.5rem) 0 0;
+    font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+    font-weight: 500;
+    line-height: 1.35;
+    text-transform: uppercase;
+  }
+
+  .texte {
+    margin: clamp(1.25rem, 3vw, 2.5rem) 0 0;
+    font-size: clamp(0.8rem, 1.05vw, 0.95rem);
+    line-height: 1.5;
+  }
+
+  .bouton {
+    margin-top: auto;
+  }
+
+  .texte + .bouton,
+  .accroche + .bouton {
+    margin-top: clamp(1.5rem, 4vw, 3rem);
+  }
+
+  .intro-fenetre {
+    margin: -0.5rem 0 1.25rem;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 47.99rem) {
+    .presence {
+      grid-template-columns: 1fr;
+    }
+
+    .carte {
+      min-height: 0;
+    }
+
+    .couple {
+      padding-block: 2.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,190 @@
+---
+import { programme, noteProgramme } from '../data/content';
+
+const [apport, ceremonie, vin] = programme;
+---
+
+<section id="programme" class="programme rayures">
+  <h2 class="titre-section">Le programme</h2>
+
+  <!-- Liste accessible (lue par les lecteurs d'écran, affichée sur mobile) -->
+  <ol class="liste">
+    {
+      programme.map((e) => (
+        <li>
+          <span class="pastille script" aria-hidden="true">{e.heure}</span>
+          <span class="visually-hidden">{e.heure} : </span>
+          <strong class="titre">{e.titre}</strong>
+          <span class="sous-titre script">{e.sousTitre}</span>
+          <span class="detail">{e.detail}</span>
+          <img class="illus" src={e.illustration} alt="" loading="lazy" />
+        </li>
+      ))
+    }
+  </ol>
+
+  <!--
+    Frise de la maquette (ordinateur et tablette) : l'image fournie (bande, ronds horaires,
+    liaisons, gravures) + les titres en texte par-dessus. Repère : maquette en 1366px de large ;
+    l'image est placée à l'échelle 0,4688 pour que ses ronds tombent sur ceux de la maquette.
+  -->
+  <svg class="frise" viewBox="0 0 1366 350" aria-hidden="true">
+    <image href="/images/deco/frise-programme.webp" x="188.5" y="13.5" width="1046" height="310"></image>
+
+    <text class="titre-frise" x="228" y="155">{apport.titre}</text>
+    <text class="sous-frise" x="220" y="180">{apport.sousTitre}</text>
+
+    <text class="titre-frise grand" x="700" y="245">{ceremonie.titre}</text>
+    <text class="sous-frise" x="700" y="272">{ceremonie.sousTitre}</text>
+
+    <text class="titre-frise" x="1045" y="140">{vin.titre}</text>
+    <text class="sous-frise" x="1045" y="165">{vin.sousTitre}</text>
+  </svg>
+
+  <p class="note">{noteProgramme}</p>
+</section>
+
+<style>
+  .programme {
+    padding-block: clamp(3rem, 6vw, 4.5rem) clamp(3rem, 6vw, 5rem);
+  }
+
+  .titre-section {
+    margin-bottom: clamp(1rem, 3vw, 2rem);
+  }
+
+  .frise {
+    display: block;
+    width: 100%;
+    max-width: 1366px;
+    margin-inline: auto;
+    height: auto;
+    overflow: visible;
+  }
+
+  .titre-frise {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 27px;
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    fill: var(--brun-cendre);
+    text-anchor: middle;
+  }
+
+  .titre-frise.grand {
+    font-size: 38px;
+  }
+
+  .sous-frise {
+    font-family: var(--font-script);
+    font-size: 30px;
+    fill: var(--olive);
+    text-anchor: middle;
+  }
+
+  .liste {
+    display: none;
+  }
+
+  .note {
+    width: fit-content;
+    max-width: calc(100% - 2 * var(--gouttiere));
+    margin: clamp(1rem, 3vw, 2rem) auto 0;
+    padding: 0.6rem 1.4rem;
+    border-radius: 999px;
+    background: var(--creme-amande);
+    color: var(--brun-cendre);
+    font-size: clamp(0.85rem, 1.2vw, 1rem);
+    font-weight: 500;
+    text-align: center;
+  }
+
+  /* Mobile : la frise devient une liste verticale */
+  @media (max-width: 47.99rem) {
+    .frise {
+      display: none;
+    }
+
+    .liste {
+      display: grid;
+      gap: 1.25rem;
+      width: min(22rem, 100% - 2 * var(--gouttiere));
+      margin: 0 auto;
+      padding: 0;
+      list-style: none;
+    }
+
+    .liste li {
+      display: grid;
+      justify-items: center;
+      padding: 1.5rem 1rem 1.25rem;
+      border-radius: 2rem;
+      background: var(--creme-amande);
+      text-align: center;
+    }
+
+    .pastille {
+      display: grid;
+      place-items: center;
+      width: 4.5rem;
+      aspect-ratio: 1;
+      margin-top: -3rem;
+      border-radius: 50%;
+      background: var(--abricot);
+      color: var(--papier);
+      font-size: 2rem;
+    }
+
+    .titre {
+      margin-top: 0.5rem;
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      line-height: 1.1;
+      text-transform: uppercase;
+      color: var(--brun-cendre);
+    }
+
+    .sous-titre {
+      font-size: 1.6rem;
+      line-height: 1;
+      color: var(--olive);
+      margin-top: -0.2rem;
+    }
+
+    .detail {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .illus {
+      max-height: 7rem;
+      width: auto;
+      margin-top: 0.75rem;
+    }
+
+    .liste li:first-child {
+      margin-top: 1.5rem;
+    }
+
+    .liste li + li {
+      margin-top: 1.5rem;
+    }
+
+    .note {
+      border-radius: 1rem;
+    }
+  }
+
+  /* Au-delà du mobile, la liste reste lisible par les lecteurs d'écran */
+  @media (min-width: 48rem) {
+    .liste {
+      display: block;
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+    }
+  }
+</style>
