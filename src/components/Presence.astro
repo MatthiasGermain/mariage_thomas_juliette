@@ -7,7 +7,7 @@ import { invitation, liens } from '../data/content';
 <!-- Bloc RSVP de la maquette : carte trombonée sur la photo du champ, photo du couple sur fond abricot. -->
 <section id="presence" class="presence">
   <div class="moitie champ">
-    <div class="carte papier">
+    <div class="carte papier" data-revele>
       <svg class="trombone" viewBox="0 0 34 112" aria-hidden="true">
         <path
           d="M10,30 V96 a8,8 0 0 0 16,0 V12 a11,11 0 0 0 -22,0 V88 a14,14 0 0 0 28,0 V30"
@@ -17,7 +17,7 @@ import { invitation, liens } from '../data/content';
           stroke-linecap="round"></path>
       </svg>
 
-      <h2 class="script rsvp">Rsvp</h2>
+      <h2 class="script rsvp" data-revele="ecrit" style="--delai: 0.9s">Rsvp</h2>
       <p class="accroche">Votre présence est le plus beau des cadeaux.</p>
       <p class="texte">{invitation.texte}</p>
       {
@@ -38,6 +38,9 @@ import { invitation, liens } from '../data/content';
   <div class="moitie couple">
     <img
       class="photo-couple"
+      data-parallaxe
+      data-revele="fondu"
+      style="--delai: 0.3s"
       src="/images/couple.jpg"
       alt="Juliette et Thomas dans un champ au coucher du soleil"
       width="800"
@@ -46,6 +49,32 @@ import { invitation, liens } from '../data/content';
     />
   </div>
 </section>
+
+<script>
+  // Légère profondeur : la photo du couple défile un peu moins vite que la page.
+  const photo = document.querySelector<HTMLElement>('[data-parallaxe]');
+  const calme = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (photo && !calme) {
+    let enAttente = false;
+    const majParallaxe = () => {
+      enAttente = false;
+      const r = photo.getBoundingClientRect();
+      const ecart = r.top + r.height / 2 - innerHeight / 2;
+      photo.style.setProperty('--parallaxe', `${(ecart * -0.08).toFixed(1)}px`);
+    };
+    addEventListener(
+      'scroll',
+      () => {
+        if (!enAttente) {
+          enAttente = true;
+          requestAnimationFrame(majParallaxe);
+        }
+      },
+      { passive: true },
+    );
+    majParallaxe();
+  }
+</script>
 
 <Fenetre id="fenetre-vin" titre="Confirme ta présence">
   <p class="intro-fenetre">À la cérémonie et au vin d'honneur participatif.</p>
@@ -80,6 +109,8 @@ import { invitation, liens } from '../data/content';
     aspect-ratio: 278 / 340;
     object-fit: cover;
     object-position: center 30%;
+    transform: translateY(var(--parallaxe, 0));
+    box-shadow: 0 10px 30px rgb(51 42 27 / 0.25);
   }
 
   .carte {
@@ -92,6 +123,24 @@ import { invitation, liens } from '../data/content';
     padding: clamp(2.5rem, 5vw, 4rem) clamp(1.5rem, 3.5vw, 3rem) clamp(2rem, 4vw, 3.5rem);
     text-align: center;
     transform: rotate(-2.6deg);
+    /* Pivot au niveau du trombone */
+    transform-origin: 14% 0;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Arrive du bas, puis oscille autour du trombone ; se balance au survol */
+    :global(.anim) .carte {
+      translate: 0 3rem;
+    }
+
+    :global(.anim) .carte.visible {
+      translate: 0 0;
+      animation: balancer 2.4s ease-in-out 0.7s;
+    }
+
+    .carte:hover {
+      animation: balancer 1.8s ease-in-out !important;
+    }
   }
 
   .trombone {

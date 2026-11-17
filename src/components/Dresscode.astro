@@ -3,18 +3,18 @@ import { couleurs } from '../data/content';
 ---
 
 <section class="dresscode" aria-labelledby="dresscode-titre">
-  <h2 id="dresscode-titre" class="script titre">Dresscode</h2>
-  <p class="consigne">Si vous voulez vous accorder au thème du mariage, voici les couleurs mises en avant :</p>
+  <h2 id="dresscode-titre" class="script titre" data-revele="ecrit">Dresscode</h2>
+  <p class="consigne" data-revele style="--delai: 0.4s">Si vous voulez vous accorder au thème du mariage, voici les couleurs mises en avant :</p>
   <ul class="pastilles">
     {
-      couleurs.map((c) => (
-        <li style={`--c: ${c.hex}`} title={c.nom}>
+      couleurs.map((c, i) => (
+        <li style={`--c: ${c.hex}; --delai: ${0.6 + i * 0.12}s`} title={c.nom} data-revele="pop">
           <span class="visually-hidden">{c.nom}</span>
         </li>
       ))
     }
   </ul>
-  <p class="facultatif">Ce n'est bien sûr pas obligatoire !</p>
+  <p class="facultatif" data-revele style="--delai: 1.3s">Ce n'est bien sûr pas obligatoire&nbsp;!</p>
 </section>
 
 <style>

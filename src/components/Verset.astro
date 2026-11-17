@@ -1,11 +1,26 @@
 ---
 import { verset } from '../data/content';
+
+// Une phrase = un morceau qui apparaît à son tour
+const phrases = verset.texte.split(/(?<=\.)\s+/);
 ---
 
 <section class="verset" aria-label="Verset de mariage">
   <blockquote>
-    <p>«{verset.texte}»</p>
-    <footer>{verset.reference} <span class="trad">{verset.traduction}</span></footer>
+    <p>
+      {
+        phrases.map((phrase, i) => (
+          <span class="phrase" data-revele="fondu" style={`--delai: ${0.15 + i * 0.22}s`}>
+            {i === 0 && '«'}
+            {phrase}
+            {i === phrases.length - 1 && '»'}{' '}
+          </span>
+        ))
+      }
+    </p>
+    <footer data-revele style={`--delai: ${0.3 + phrases.length * 0.22}s`}>
+      {verset.reference} <span class="trad">{verset.traduction}</span>
+    </footer>
   </blockquote>
 </section>
 

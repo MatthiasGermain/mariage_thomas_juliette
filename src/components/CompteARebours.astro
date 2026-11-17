@@ -10,11 +10,11 @@ const unites = [
 ---
 
 <section class="compte" aria-label="Compte à rebours">
-  <p class="script intro">Le grand jour approche dans…</p>
+  <p class="script intro" data-revele="ecrit">Le grand jour approche dans…</p>
   <div class="cases" data-cible={mariage.dateCeremonie}>
     {
-      unites.map((u) => (
-        <div class="case">
+      unites.map((u, i) => (
+        <div class="case" data-revele style={`--delai: ${0.5 + i * 0.15}s`}>
           <span class="valeur" data-unite={u.cle}>–</span>
           <span class="label">{u.label}</span>
         </div>
@@ -32,13 +32,35 @@ const unites = [
     );
     const pad = (n: number) => String(n).padStart(2, '0');
 
+    // Un <span> par chiffre : seul le chiffre qui change « tombe » (compteur mécanique).
+    const ecrire = (el: HTMLElement, texte: string) => {
+      el.setAttribute('aria-label', texte);
+      // Premier passage : on retire le tiret affiché sans JavaScript (nœud texte, pas un élément)
+      if (!el.querySelector('.chiffre')) el.textContent = '';
+      while (el.children.length < texte.length) {
+        const chiffre = document.createElement('span');
+        chiffre.className = 'chiffre';
+        chiffre.setAttribute('aria-hidden', 'true');
+        el.prepend(chiffre);
+      }
+      while (el.children.length > texte.length) el.firstElementChild?.remove();
+      [...texte].forEach((c, i) => {
+        const chiffre = el.children[i] as HTMLElement;
+        if (chiffre.textContent === c) return;
+        chiffre.textContent = c;
+        chiffre.classList.remove('tic');
+        void chiffre.offsetWidth; // relance l'animation
+        chiffre.classList.add('tic');
+      });
+    };
+
     const maj = () => {
       const reste = Math.max(0, cible - Date.now());
       const s = Math.floor(reste / 1000);
-      champs.jours.textContent = String(Math.floor(s / 86400));
-      champs.heures.textContent = pad(Math.floor((s % 86400) / 3600));
-      champs.minutes.textContent = pad(Math.floor((s % 3600) / 60));
-      champs.secondes.textContent = pad(s % 60);
+      ecrire(champs.jours, String(Math.floor(s / 86400)));
+      ecrire(champs.heures, pad(Math.floor((s % 86400) / 3600)));
+      ecrire(champs.minutes, pad(Math.floor((s % 3600) / 60)));
+      ecrire(champs.secondes, pad(s % 60));
       if (reste === 0) clearInterval(timer);
     };
     const timer = setInterval(maj, 1000);
@@ -84,6 +106,31 @@ const unites = [
     line-height: 1;
     color: var(--olive);
     font-variant-numeric: lining-nums tabular-nums;
+    /* Les chiffres qui glissent restent dans leur case */
+    display: inline-flex;
+    overflow: hidden;
+    padding-block: 0.06em;
+  }
+
+  .valeur :global(.chiffre) {
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .valeur :global(.chiffre.tic) {
+      animation: tomber 0.45s var(--ease-papier);
+    }
+  }
+
+  @keyframes tomber {
+    from {
+      translate: 0 -70%;
+      opacity: 0;
+    }
+    to {
+      translate: 0 0;
+      opacity: 1;
+    }
   }
 
   .case:last-child .valeur {

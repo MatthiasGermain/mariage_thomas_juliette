@@ -4,8 +4,8 @@ import { lieu, liens, logements } from '../data/content';
 ---
 
 <section id="lieu" class="lieu rayures">
-  <div class="carte papier">
-    <h2 class="titre-section">Le lieu</h2>
+  <div class="carte papier" data-revele="pose">
+    <h2 class="titre-section" data-revele="ecrit" style="--delai: 0.7s">Le lieu</h2>
     <address>
       <strong class="nom">{lieu.nom}</strong>
       {lieu.adresse.map((l) => <span>{l}</span>)}
@@ -25,16 +25,16 @@ import { lieu, liens, logements } from '../data/content';
 </section>
 
 <section id="infos" class="dormir">
-  <h2 class="script titre">Dormir</h2>
-  <p class="consigne">Les possibilités de logement autour du domaine</p>
+  <h2 class="script titre" data-revele="ecrit">Dormir</h2>
+  <p class="consigne" data-revele style="--delai: 0.4s">Les possibilités de logement autour du domaine</p>
   <div class="groupes">
     {
       logements.map((g) => (
         <div class="groupe">
           <h3 class="groupe-titre">{g.groupe}</h3>
           <ul class="logements">
-            {g.items.map((l) => (
-              <li>
+            {g.items.map((l, i) => (
+              <li data-revele style={`--delai: ${i * 0.12}s`}>
                 <span class="note">{l.note}</span>
                 <strong class="logement">{l.nom}</strong>
                 {l.ville && <span class="ville script">{l.ville}</span>}
@@ -59,7 +59,21 @@ import { lieu, liens, logements } from '../data/content';
     width: min(100%, 38rem);
     padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3.5rem);
     text-align: center;
-    transform: rotate(1.5deg);
+    /* Seule la feuille est inclinée (::before) : le texte reste droit, donc net */
+    position: relative;
+    isolation: isolate;
+    background: none;
+    box-shadow: none;
+  }
+
+  .lieu .carte::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--papier);
+    box-shadow: 0 12px 35px rgb(51 42 27 / 0.22);
+    rotate: 1.5deg;
   }
 
   .lieu .titre-section {
@@ -158,6 +172,9 @@ import { lieu, liens, logements } from '../data/content';
 
   .logements li {
     position: relative;
+    transition:
+      transform 0.35s var(--ease-papier),
+      box-shadow 0.35s var(--ease-papier);
     display: grid;
     align-content: start;
     flex: 0 1 22rem;
@@ -189,6 +206,12 @@ import { lieu, liens, logements } from '../data/content';
     color: var(--cafe-noir);
     font-size: 0.75rem;
     font-weight: 700;
+  }
+
+  /* Carte qu'on soulève légèrement */
+  .logements li:hover {
+    transform: translateY(-4px) rotate(-0.4deg);
+    box-shadow: 0 10px 22px rgb(51 42 27 / 0.15);
   }
 
   .logements p {

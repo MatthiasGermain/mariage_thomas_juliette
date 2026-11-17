@@ -21,6 +21,8 @@ const {
     <meta name="description" content={description} />
     <meta name="robots" content="noindex" />
     <link rel="icon" type="image/png" href="/images/logo.png" />
+    <!-- Active les animations seulement si le JS tourne (sinon tout reste visible) -->
+    <script is:inline>document.documentElement.classList.add('anim');</script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,5 +32,32 @@ const {
   </head>
   <body>
     <slot />
+
+    <script>
+      // Apparition au défilement : ajoute .visible aux éléments [data-revele] quand ils entrent à l'écran.
+      const elements = document.querySelectorAll<HTMLElement>('[data-revele]');
+      if (!('IntersectionObserver' in window)) {
+        elements.forEach((el) => el.classList.add('visible'));
+      } else {
+        // Un titre « écrit » est masqué par clip-path : sa surface visible est nulle et
+        // l'observateur ne le verrait jamais entrer. On observe donc son parent à sa place.
+        const cibles = new Map<Element, HTMLElement[]>();
+        elements.forEach((el) => {
+          const observe = el.dataset.revele === 'ecrit' && el.parentElement ? el.parentElement : el;
+          cibles.set(observe, [...(cibles.get(observe) ?? []), el]);
+        });
+        const observateur = new IntersectionObserver(
+          (entrees) => {
+            for (const entree of entrees) {
+              if (!entree.isIntersecting) continue;
+              cibles.get(entree.target)?.forEach((el) => el.classList.add('visible'));
+              observateur.unobserve(entree.target);
+            }
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0 },
+        );
+        cibles.forEach((_, el) => observateur.observe(el));
+      }
+    </script>
   </body>
 </html>

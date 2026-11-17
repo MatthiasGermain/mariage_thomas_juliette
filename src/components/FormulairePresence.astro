@@ -44,6 +44,45 @@ const id = (champ: string) => `${type}-${champ}`;
 </form>
 
 <script>
+  // Petite pluie de confettis aux couleurs du mariage quand la réponse est enregistrée.
+  const COULEURS = ['#332a1b', '#5b4734', '#e1973d', '#e7d6c2', '#6b734f'];
+
+  function lancerConfettis(depuis: HTMLElement) {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const r = depuis.getBoundingClientRect();
+    // Dans une fenêtre modale, les confettis doivent être dans la fenêtre pour passer au-dessus
+    const parent = depuis.closest('dialog') ?? document.body;
+    for (let i = 0; i < 42; i++) {
+      const c = document.createElement('span');
+      const taille = 6 + Math.random() * 6;
+      Object.assign(c.style, {
+        position: 'fixed',
+        left: `${r.left + r.width / 2}px`,
+        top: `${r.top + r.height / 2}px`,
+        width: `${taille}px`,
+        height: `${taille * (Math.random() < 0.5 ? 0.45 : 1)}px`,
+        background: COULEURS[i % COULEURS.length],
+        borderRadius: Math.random() < 0.3 ? '50%' : '1px',
+        pointerEvents: 'none',
+        zIndex: '10',
+      });
+      parent.append(c);
+      const angle = Math.random() * Math.PI - Math.PI; // vers le haut, en éventail
+      const force = 120 + Math.random() * 160;
+      const dx = Math.cos(angle) * force;
+      const dy = Math.sin(angle) * force;
+      const tour = (Math.random() - 0.5) * 720;
+      c.animate(
+        [
+          { transform: 'translate(-50%, -50%) rotate(0deg)', opacity: 1 },
+          { transform: `translate(${dx}px, ${dy}px) rotate(${tour / 2}deg)`, opacity: 1, offset: 0.45 },
+          { transform: `translate(${dx * 1.3}px, ${dy + 260}px) rotate(${tour}deg)`, opacity: 0 },
+        ],
+        { duration: 1600 + Math.random() * 900, easing: 'cubic-bezier(0.2, 0.7, 0.4, 1)' },
+      ).onfinish = () => c.remove();
+    }
+  }
+
   document.querySelectorAll<HTMLFormElement>('form[data-presence]').forEach((form) => {
     const message = form.querySelector<HTMLElement>('.message')!;
     const bouton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
@@ -67,6 +106,7 @@ const id = (champ: string) => `${type}-${champ}`;
         if (!reponse.ok) throw new Error(corps.erreur ?? "L'envoi a échoué, merci de réessayer.");
 
         form.reset();
+        lancerConfettis(bouton);
         message.dataset.etat = 'ok';
         message.textContent = corps.message ?? 'Merci, votre réponse est bien enregistrée !';
       } catch (erreur) {

@@ -68,7 +68,8 @@ const droite = [
   /* Le logo PNG a un fond blanc et des marges : on le recadre et on fond le blanc. */
   .logo {
     display: block;
-    width: clamp(3rem, 7.5vw, 6.5rem);
+    /* Calé sur la largeur d'une rayure : le médaillon tient dans la bande verte du milieu */
+    width: calc(var(--rayure) * 0.92);
     aspect-ratio: 68 / 86;
     overflow: hidden;
   }
@@ -77,7 +78,8 @@ const droite = [
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scale(1.7);
+    /* translateX : le médaillon est décalé vers la gauche dans le PNG, on le recentre */
+    transform: scale(1.7) translateX(2%);
     mix-blend-mode: multiply;
   }
 

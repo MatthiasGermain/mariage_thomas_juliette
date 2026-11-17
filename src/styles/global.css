@@ -125,9 +125,16 @@ h3 {
 /* Fond à rayures verticales sauge / crème, comme le save the date */
 .rayures {
   background-color: var(--creme-clair);
-  background-image: linear-gradient(90deg, var(--sauge) 50%, transparent 50%);
+  /* Motif centré sur une bande sauge : quelle que soit la largeur, une bande verte
+     tombe pile au milieu de la page, sous le logo. */
+  background-image: linear-gradient(
+    90deg,
+    transparent 25%,
+    var(--sauge) 25% 75%,
+    transparent 75%
+  );
   background-size: calc(2 * var(--rayure)) 100%;
-  background-position: calc(var(--rayure) * 0.35) 0;
+  background-position: center 0;
 }
 
 /* Carte papier (RSVP, lieu, fenêtres des formulaires) */
@@ -172,4 +179,131 @@ input:focus-visible {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------
+   Animations « papier » : lentes, une seule fois, à l'arrivée à l'écran.
+   Rien ne bouge si le visiteur a demandé de réduire les animations, ni sans JS.
+   On anime translate / rotate / scale (propriétés séparées) pour ne pas écraser
+   les transform déjà posés sur les éléments (cartes inclinées, noms…).
+   ------------------------------------------------------------------ */
+:root {
+  --ease-papier: cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Par défaut : fondu en montant légèrement */
+  .anim [data-revele] {
+    opacity: 0;
+    translate: 0 1.5rem;
+    transition:
+      opacity 0.9s var(--ease-papier) var(--delai, 0s),
+      translate 0.9s var(--ease-papier) var(--delai, 0s);
+  }
+
+  .anim [data-revele].visible {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  /* Écriture à la plume, de gauche à droite (titres en script) */
+  .anim [data-revele='ecrit'] {
+    opacity: 1;
+    translate: none;
+    clip-path: inset(-40% 100% -40% -10%);
+    transition: clip-path 1.8s cubic-bezier(0.45, 0.05, 0.35, 1) var(--delai, 0s);
+  }
+
+  .anim [data-revele='ecrit'].visible {
+    clip-path: inset(-40% -10% -40% -10%);
+  }
+
+  /* Fondu seul */
+  .anim [data-revele='fondu'] {
+    translate: none;
+  }
+
+  /* Conteneur dont les enfants s'animent eux-mêmes (ex. frise du programme) */
+  .anim [data-revele='scene'] {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+
+  /* Le tracé commence au début du texte, pas au bord de la colonne */
+  .anim [data-revele='ecrit'] {
+    width: fit-content;
+    max-width: 100%;
+    /* !important : les marges propres aux titres ne doivent pas les décentrer */
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Objet qu'on pose sur la table : tombe, tourne un peu, se stabilise */
+  .anim [data-revele='pose'] {
+    translate: none;
+    transition: none;
+  }
+
+  .anim [data-revele='pose'].visible {
+    /* backwards et pas both : une fois posée, l'élément est libéré de l'animation
+       (sinon il reste sur un calque composité et le texte devient légèrement flou) */
+    animation: poser 1.2s var(--ease-papier) var(--delai, 0s) backwards;
+  }
+
+  /* Pastille ou rond qui apparaît */
+  .anim [data-revele='pop'] {
+    translate: none;
+    scale: 0.6;
+    transition:
+      opacity 0.6s var(--ease-papier) var(--delai, 0s),
+      scale 0.7s cubic-bezier(0.34, 1.4, 0.64, 1) var(--delai, 0s);
+  }
+
+  .anim [data-revele='pop'].visible {
+    scale: 1;
+  }
+}
+
+@keyframes poser {
+  0% {
+    opacity: 0;
+    translate: 0 -2.5rem;
+    rotate: -7deg;
+    scale: 1.06;
+  }
+  55% {
+    opacity: 1;
+    translate: 0 0.2rem;
+    rotate: 1.5deg;
+    scale: 1;
+  }
+  80% {
+    rotate: -0.5deg;
+  }
+  100% {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+
+/* Carte épinglée qui oscille autour de son trombone */
+@keyframes balancer {
+  0% {
+    rotate: 0deg;
+  }
+  25% {
+    rotate: 2.2deg;
+  }
+  50% {
+    rotate: -1.4deg;
+  }
+  75% {
+    rotate: 0.6deg;
+  }
+  100% {
+    rotate: 0deg;
+  }
 }
