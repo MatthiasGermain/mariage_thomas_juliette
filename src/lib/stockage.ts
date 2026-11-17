@@ -1,42 +1,34 @@
-// Enregistrement des réponses : Google Sheets si configuré, sinon fichier local en développement.
+// Enregistrement des réponses : Google Sheet via Apps Script si configuré, sinon fichier local en développement.
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { JWT } from 'google-auth-library';
-import { GOOGLE_SERVICE_ACCOUNT_EMAIL, GOOGLE_PRIVATE_KEY, GOOGLE_SHEET_ID } from 'astro:env/server';
+import { SHEETS_SCRIPT_URL, SHEETS_SCRIPT_SECRET } from 'astro:env/server';
 
 export type Ligne = (string | number)[];
 
 /**
- * Onglets du tableur, à créer avec exactement ces noms.
- * En-têtes de la ligne 1 : Date | Prénom | Nom | Nombre de personnes
+ * Onglets du tableur. Le script (google-apps-script/Code.gs) les crée au premier envoi,
+ * avec les en-têtes : Date | Prénom | Nom | Nombre de personnes
  */
 export const ONGLETS = {
   repas: 'Repas',
   'vin-honneur': "Vin d'honneur",
 } as const;
 
-const googleConfigure = Boolean(GOOGLE_SERVICE_ACCOUNT_EMAIL && GOOGLE_PRIVATE_KEY && GOOGLE_SHEET_ID);
+const scriptConfigure = Boolean(SHEETS_SCRIPT_URL && SHEETS_SCRIPT_SECRET);
 
-let client: JWT | undefined;
-
-function clientGoogle(): JWT {
-  client ??= new JWT({
-    email: GOOGLE_SERVICE_ACCOUNT_EMAIL,
-    // Vercel stocke la clé sur une ligne : on remet les vrais retours à la ligne.
-    key: GOOGLE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
-  return client;
-}
-
-async function ajouterGoogle(onglet: string, ligne: Ligne): Promise<void> {
-  // Les noms d'onglets avec apostrophe doivent être entre quotes, apostrophe doublée.
-  const plage = encodeURIComponent(`'${onglet.replace(/'/g, "''")}'!A:D`);
-  await clientGoogle().request({
-    url: `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/${plage}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`,
+async function ajouterSheet(onglet: string, ligne: Ligne): Promise<void> {
+  // Apps Script répond par une redirection (302) vers la réponse : fetch la suit tout seul.
+  const reponse = await fetch(SHEETS_SCRIPT_URL!, {
     method: 'POST',
-    data: { values: [ligne] },
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ secret: SHEETS_SCRIPT_SECRET, onglet, ligne }),
+    signal: AbortSignal.timeout(15000),
   });
+  // Apps Script renvoie toujours 200 : le vrai résultat est dans le JSON.
+  const corps = (await reponse.json().catch(() => null)) as { ok?: boolean; erreur?: string } | null;
+  if (!reponse.ok || !corps?.ok) {
+    throw new Error(`Apps Script a refusé l'enregistrement : ${corps?.erreur ?? `HTTP ${reponse.status}`}`);
+  }
 }
 
 const FICHIER_LOCAL = path.resolve('.data/reponses.json');
@@ -54,7 +46,7 @@ async function ajouterLocal(onglet: string, ligne: Ligne): Promise<void> {
 }
 
 export async function ajouterReponse(onglet: string, ligne: Ligne): Promise<void> {
-  if (googleConfigure) return ajouterGoogle(onglet, ligne);
+  if (scriptConfigure) return ajouterSheet(onglet, ligne);
   if (import.meta.env.DEV) return ajouterLocal(onglet, ligne);
-  throw new Error('Stockage non configuré : variables GOOGLE_* manquantes.');
+  throw new Error('Stockage non configuré : variables SHEETS_SCRIPT_URL et SHEETS_SCRIPT_SECRET manquantes.');
 }

@@ -9,11 +9,11 @@ export default defineConfig({
     schema: {
       // Mot de passe donné sur le faire-part pour s'inscrire au repas.
       REPAS_PASSWORD: envField.string({ context: 'server', access: 'secret' }),
-      // Compte de service Google pour écrire dans le tableur des réponses.
+      // Application web Apps Script attachée au tableur des réponses (google-apps-script/Code.gs)
+      // et secret partagé avec elle (propriété de script SECRET).
       // Absents en local : les réponses vont alors dans .data/reponses.json.
-      GOOGLE_SERVICE_ACCOUNT_EMAIL: envField.string({ context: 'server', access: 'secret', optional: true }),
-      GOOGLE_PRIVATE_KEY: envField.string({ context: 'server', access: 'secret', optional: true }),
-      GOOGLE_SHEET_ID: envField.string({ context: 'server', access: 'secret', optional: true }),
+      SHEETS_SCRIPT_URL: envField.string({ context: 'server', access: 'secret', optional: true }),
+      SHEETS_SCRIPT_SECRET: envField.string({ context: 'server', access: 'secret', optional: true }),
     },
   },
 });

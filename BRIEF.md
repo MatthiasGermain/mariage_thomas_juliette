@@ -13,12 +13,12 @@ Identité visuelle : voir `Identité visuelle/` (charte, logo, maquette `Site in
 
 - **Astro**, déployé sur **Vercel** (adaptateur `@astrojs/vercel`). Pages statiques, sauf deux routes API serveur pour les formulaires.
 - **Google Sheets** pour stocker les réponses : un onglet « Repas » et un onglet « Vin d'honneur », colonnes date · nom · prénom · nombre de personnes. Le tableur est partagé avec Juliette et Thomas.
-- Écriture via un **compte de service Google** (API Sheets). Le tableur est partagé en éditeur avec l'e-mail de ce compte de service.
+- Écriture via un **script Google Apps Script** attaché au tableur (`google-apps-script/Code.gs`), publié en application web. Gratuit, sans Google Cloud ni carte bancaire. Le serveur du site lui envoie chaque réponse avec un secret partagé.
 - CSS simple, avec les couleurs de la charte en variables. JS uniquement pour le compte à rebours et les formulaires.
 - Variables d'environnement Vercel, jamais dans le dépôt :
   - `REPAS_PASSWORD` : mot de passe du repas
-  - `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY` : identifiants du compte de service
-  - `GOOGLE_SHEET_ID` : identifiant du tableur
+  - `SHEETS_SCRIPT_URL` : URL de l'application web Apps Script (se termine par `/exec`)
+  - `SHEETS_SCRIPT_SECRET` : secret partagé, identique à la propriété de script `SECRET`
 
 ## Lien type Linktree
 
