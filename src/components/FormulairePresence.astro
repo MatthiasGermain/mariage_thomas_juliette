@@ -239,23 +239,26 @@ const enfants = ['0', '1', '2', '3', '4'].map((v) => ({ valeur: v, label: v }));
     };
 
     // data-si="present=oui;accompagnants>0" : l'étape n'apparaît que si toutes les conditions sont vraies.
-    const active = (etape: HTMLElement) =>
+    // Pour le compteur (« 2 / 10 »), une condition sur une question pas encore répondue compte
+    // comme vraie : le total ne baisse que quand une réponse écarte vraiment des questions.
+    const active = (etape: HTMLElement, pourCompter = false) =>
       (etape.dataset.si ?? '')
         .split(';')
         .filter(Boolean)
         .every((condition) => {
           const [, nom, op, attendu] = condition.match(/^(\w+)([=>])(.+)$/)!;
           const v = lire(nom);
+          if (pourCompter && v === '') return true;
           return op === '=' ? v === attendu : Number(v) > Number(attendu);
         });
 
-    const actives = () => etapes.filter(active);
+    const actives = () => etapes.filter((e) => active(e));
 
     const afficher = (index: number) => {
       courante = index;
       const etape = etapes[index];
       etapes.forEach((e, i) => (e.hidden = i !== index));
-      const visibles = actives();
+      const visibles = etapes.filter((e) => active(e, true));
       const position = visibles.indexOf(etape) + 1;
       compteur.textContent = `${position} / ${visibles.length}`;
       barre.style.width = `${(position / visibles.length) * 100}%`;
@@ -324,7 +327,7 @@ const enfants = ['0', '1', '2', '3', '4'].map((v) => ({ valeur: v, label: v }));
     };
 
     const reculer = () => {
-      const precedentes = etapes.slice(0, courante).filter(active);
+      const precedentes = etapes.slice(0, courante).filter((e) => active(e));
       if (precedentes.length) afficher(etapes.indexOf(precedentes.at(-1)!));
     };
 

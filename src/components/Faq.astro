@@ -14,8 +14,13 @@ const tel = `tel:+33${contact.telephone.replace(/\s/g, '').slice(1)}`;
     {
       questions.map((q, i) => (
         <details data-revele style={`--delai: ${0.1 + i * 0.06}s`}>
-          <summary>{q.question}</summary>
-          <p>{q.reponse}</p>
+          <summary>
+            {q.question}
+            <span class="icone" aria-hidden="true" />
+          </summary>
+          <div class="reponse">
+            <p>{q.reponse}</p>
+          </div>
         </details>
       ))
     }
@@ -25,6 +30,42 @@ const tel = `tel:+33${contact.telephone.replace(/\s/g, '').slice(1)}`;
     Pour toutes autres questions, contactez {contact.nom}&nbsp;: <a href={tel}>{contact.telephone}</a>
   </p>
 </section>
+
+<script>
+  // Ouverture et fermeture en douceur : on anime la hauteur du <details>, que le navigateur
+  // ouvre et ferme d'un coup sinon. La classe « ouvert » pilote l'icône et le fondu du texte.
+  const DUREE = 450;
+  const COURBE = 'cubic-bezier(0.33, 1, 0.68, 1)';
+
+  document.querySelectorAll<HTMLDetailsElement>('.faq details').forEach((details) => {
+    const summary = details.querySelector('summary')!;
+    const reponse = details.querySelector<HTMLElement>('.reponse')!;
+    let animation: Animation | undefined;
+
+    summary.addEventListener('click', (event) => {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      event.preventDefault();
+
+      const depart = details.offsetHeight;
+      const ouvrir = !details.classList.contains('ouvert');
+      animation?.cancel();
+      details.classList.toggle('ouvert', ouvrir);
+      details.open = true;
+      const fin = ouvrir ? details.offsetHeight : details.offsetHeight - reponse.offsetHeight;
+
+      animation = details.animate({ height: [`${depart}px`, `${fin}px`] }, { duration: DUREE, easing: COURBE });
+      animation.onfinish = () => {
+        animation = undefined;
+        if (!ouvrir) details.open = false;
+      };
+    });
+
+    // Ouverture sans animation (mouvements réduits, recherche dans la page…) : l'icône suit.
+    details.addEventListener('toggle', () => {
+      if (!animation) details.classList.toggle('ouvert', details.open);
+    });
+  });
+</script>
 
 <style>
   .faq {
@@ -69,17 +110,58 @@ const tel = `tel:+33${contact.telephone.replace(/\s/g, '').slice(1)}`;
     display: none;
   }
 
-  summary::after {
-    content: '+';
+  /* « + » dessiné en deux traits : le trait vertical se couche pour donner « − » */
+  .icone {
+    position: relative;
     flex-shrink: 0;
-    font-size: 1.4rem;
-    font-weight: 400;
-    line-height: 1;
-    transition: rotate 0.25s ease;
+    width: 0.85rem;
+    height: 0.85rem;
+    transition: rotate 0.45s cubic-bezier(0.33, 1, 0.68, 1);
   }
 
-  details[open] summary::after {
-    rotate: 45deg;
+  .icone::before,
+  .icone::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 1.5px;
+    margin-top: -0.75px;
+    border-radius: 1px;
+    background: currentColor;
+    transition: rotate 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .icone::after {
+    rotate: 90deg;
+  }
+
+  details.ouvert .icone {
+    rotate: 180deg;
+  }
+
+  details.ouvert .icone::after {
+    rotate: 0deg;
+  }
+
+  details {
+    overflow: hidden;
+  }
+
+  .reponse {
+    padding-bottom: 1.25rem;
+    transition:
+      opacity 0.35s ease,
+      translate 0.45s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  /* Fondu du texte, seulement quand les animations sont actives (sinon il reste visible) */
+  :global(.anim) details:not(.ouvert) .reponse {
+    opacity: 0;
+    translate: 0 -0.4rem;
+  }
+
+  details.ouvert .reponse {
+    transition-delay: 0.08s;
   }
 
   summary:focus-visible {
@@ -88,7 +170,7 @@ const tel = `tel:+33${contact.telephone.replace(/\s/g, '').slice(1)}`;
   }
 
   details p {
-    margin: 0 0 1.25rem;
+    margin: 0;
     max-width: 46rem;
     line-height: 1.6;
   }
