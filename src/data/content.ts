@@ -26,8 +26,8 @@ export const verset = {
 export const programme = [
   {
     heure: '13h',
-    titre: 'Apport des plats',
-    sousTitre: 'entre 13h et 14h',
+    titre: 'Dépôt des plats',
+    sousTitre: "pour le vin d'honneur",
     detail: "Déposez votre participation au vin d'honneur.",
     illustration: '/images/deco/plats.webp',
   },
@@ -47,8 +47,21 @@ export const programme = [
   },
 ];
 
-export const noteProgramme =
-  "Le vin d'honneur se fera en extérieur : nous vous conseillons de vous habiller chaudement !";
+export const vinHonneur = {
+  textes: [
+    "Pour participer au vin d'honneur, merci d'inscrire ce que vous allez apporter en remplissant ce formulaire.",
+    "Nous sommes reconnaissants de l'aide que vous nous donnez pour ce grand jour !",
+  ],
+  note: "Le vin d'honneur se fera en extérieur : nous vous conseillons de vous habiller chaudement",
+};
+
+export const rsvp = {
+  accroche: 'Nous nous réjouissons de pouvoir vivre cette belle journée avec toi !',
+  textes: [
+    'Pour faciliter son organisation, merci de bien vouloir confirmer ta présence en cliquant sur le bouton ci-dessous.',
+    "Tu y trouveras également un lien pour t'inscrire au covoiturage et pour partager ta contribution au vin d'honneur participatif.",
+  ],
+};
 
 export const lieu = {
   nom: 'Domaine des Templiers',
@@ -138,5 +151,43 @@ export const logements: { groupe: string; items: Logement[] }[] = [
           "Parking, bornes de recharge pour véhicules électriques, accès rapide à l'autoroute. Plus éloigné, au nord-ouest de Metz.",
       },
     ],
+  },
+];
+
+// Contact pour toutes les autres questions (bas de la FAQ).
+export const contact = { nom: 'Faneva', telephone: '07 82 09 29 52' };
+
+// FAQ de la maquette. Une question sans réponse n'est pas affichée : à compléter.
+export const faq: { question: string; reponse: string }[] = [
+  {
+    question: 'À quelle heure devons-nous arriver pour la cérémonie ?',
+    reponse:
+      "La cérémonie commence à 14h : nous vous conseillons d'arriver un peu avant pour vous installer. Si vous apportez quelque chose pour le vin d'honneur, vous pouvez le déposer entre 13h et 14h.",
+  },
+  {
+    question: 'Y a-t-il un dress code ?',
+    reponse:
+      "Ce n'est pas obligatoire ! Si vous voulez vous accorder au thème du mariage, les couleurs mises en avant sont présentées dans la partie Dresscode.",
+  },
+  {
+    question: "À qui s'adresser en cas de question le jour J ?",
+    reponse: `À ${contact.nom}, au ${contact.telephone}.`,
+  },
+  {
+    question: 'Où auront lieu les différents moments du mariage ?',
+    reponse:
+      "Au Domaine des Templiers (Ferme de Béville, Salle Bastide, 3 Rue Beville, 57530 Glatigny). Le vin d'honneur se fera en extérieur : pensez à vous habiller chaudement.",
+  },
+  {
+    question: "Puis-je venir avec quelqu'un ?",
+    reponse: 'Les +1 sont indiqués sur le faire-part.',
+  },
+  {
+    question: 'Les enfants sont-ils les bienvenus ?',
+    reponse: 'Les enfants invités sont indiqués sur le faire-part.',
+  },
+  {
+    question: 'Un service de babysitting sera-t-il proposé ?',
+    reponse: '',
   },
 ];

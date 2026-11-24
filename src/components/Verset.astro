@@ -19,7 +19,7 @@ const phrases = verset.texte.split(/(?<=\.)\s+/);
       }
     </p>
     <footer data-revele style={`--delai: ${0.3 + phrases.length * 0.22}s`}>
-      {verset.reference} <span class="trad">{verset.traduction}</span>
+      {verset.reference}
     </footer>
   </blockquote>
 </section>
@@ -53,8 +53,4 @@ const phrases = verset.texte.split(/(?<=\.)\s+/);
     text-transform: uppercase;
   }
 
-  .trad {
-    font-weight: 500;
-    opacity: 0.7;
-  }
 </style>

@@ -1,5 +1,5 @@
 ---
-import { programme, noteProgramme } from '../data/content';
+import { programme } from '../data/content';
 
 const [apport, ceremonie, vin] = programme;
 ---
@@ -84,7 +84,6 @@ const [apport, ceremonie, vin] = programme;
     </g>
   </svg>
 
-  <p class="note" data-revele style="--delai: 0.3s">{noteProgramme}</p>
 </section>
 
 <style>
@@ -270,18 +269,6 @@ const [apport, ceremonie, vin] = programme;
     display: none;
   }
 
-  .note {
-    width: fit-content;
-    max-width: calc(100% - 2 * var(--gouttiere));
-    margin: clamp(1rem, 3vw, 2rem) auto 0;
-    padding: 0.6rem 1.4rem;
-    border-radius: 999px;
-    background: var(--creme-amande);
-    color: var(--brun-cendre);
-    font-size: clamp(0.85rem, 1.2vw, 1rem);
-    font-weight: 500;
-    text-align: center;
-  }
 
   /* Mobile : la frise devient une liste verticale */
   @media (max-width: 47.99rem) {
@@ -352,10 +339,6 @@ const [apport, ceremonie, vin] = programme;
 
     .liste li + li {
       margin-top: 1.5rem;
-    }
-
-    .note {
-      border-radius: 1rem;
     }
   }
 
