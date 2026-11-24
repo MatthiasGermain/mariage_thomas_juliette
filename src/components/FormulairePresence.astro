@@ -1,47 +1,180 @@
 ---
-// Formulaire de confirmation de présence, envoyé à /api/<type> (voir src/lib/rsvp.ts).
+// Confirmation de présence en plusieurs étapes, une question par écran, envoyée à /api/<type>.
+// Les questions reprennent les Google Forms d'origine. Traitement serveur : src/lib/presence.ts.
+import { liens } from '../data/content';
+
 interface Props {
   type: 'repas' | 'vin-honneur';
 }
 
 const { type } = Astro.props;
-const avecCode = type === 'repas';
+const repas = type === 'repas';
 const id = (champ: string) => `${type}-${champ}`;
+
+const presence = repas
+  ? { question: 'Seras-tu présent à notre repas de mariage le samedi soir ?', oui: "Oui, j'ai hâte de danser !" }
+  : { question: 'Seras-tu présent à notre cérémonie de mariage ?', oui: 'Oui, avec joie !' };
+
+const accompagnants = [
+  { valeur: '0', label: 'Juste moi' },
+  ...['1', '2', '3', '4', '5'].map((v) => ({ valeur: v, label: v })),
+];
+const enfants = ['0', '1', '2', '3', '4'].map((v) => ({ valeur: v, label: v }));
 ---
 
-<form class="formulaire" data-presence={type} novalidate>
-  {
-    avecCode && (
-      <label for={id('code')}>
-        Code reçu sur le faire-part
-        <input id={id('code')} name="code" type="password" required autocomplete="off" />
+<div class="presence-parcours">
+  <form class="parcours" data-presence={type} novalidate>
+    <div class="progression" aria-hidden="true"><span></span></div>
+    <p class="compteur"></p>
+
+    {
+      repas && (
+        <div class="etape" data-verifie-code data-hors-recap>
+          <label class="question" for={id('code')}>Le code reçu sur ton faire-part</label>
+          <input id={id('code')} name="code" type="password" required autocomplete="off" />
+        </div>
+      )
+    }
+
+    <fieldset class="etape">
+      <legend class="question">Ton prénom et ton nom&nbsp;?</legend>
+      <div class="ligne">
+        <label for={id('prenom')}>
+          Prénom
+          <input id={id('prenom')} name="prenom" required maxlength="100" autocomplete="given-name" />
+        </label>
+        <label for={id('nom')}>
+          Nom
+          <input id={id('nom')} name="nom" required maxlength="100" autocomplete="family-name" />
+        </label>
+      </div>
+    </fieldset>
+
+    <div class="etape">
+      <label class="question" for={id('email')}>Ton adresse mail&nbsp;?</label>
+      <input id={id('email')} name="email" type="email" required maxlength="200" autocomplete="email" />
+    </div>
+
+    <fieldset class="etape">
+      <legend class="question">{presence.question}</legend>
+      <div class="choix colonne">
+        <label><input type="radio" name="present" value="oui" required /><span>{presence.oui}</span></label>
+        <label><input type="radio" name="present" value="non" /><span>Non, malheureusement…</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="etape" data-si="present=oui">
+      <legend class="question">Combien de personnes viendront avec toi&nbsp;?</legend>
+      {repas && <p class="aide">Les +1 et les enfants sont indiqués sur le faire-part.</p>}
+      <div class="choix">
+        {
+          accompagnants.map((c, i) => (
+            <label>
+              <input type="radio" name="accompagnants" value={c.valeur} required={i === 0} />
+              <span>{c.label}</span>
+            </label>
+          ))
+        }
+        <label><input type="radio" name="accompagnants" value="autre" /><span>Autre</span></label>
+      </div>
+      <label class="autre" hidden>
+        Nombre de personnes
+        <input name="accompagnantsAutre" type="number" min="6" max="20" disabled />
       </label>
-    )
-  }
-  <div class="ligne">
-    <label for={id('prenom')}>
-      Prénom
-      <input id={id('prenom')} name="prenom" required maxlength="100" autocomplete="given-name" />
+    </fieldset>
+
+    {
+      repas && (
+        <>
+          <div class="etape" data-si="present=oui;accompagnants>0">
+            <label class="question" for={id('noms')}>
+              Indique le nom de toutes les personnes qui t'accompagneront&nbsp;:
+            </label>
+            <textarea id={id('noms')} name="nomsAccompagnants" rows="3" required maxlength="1000" />
+          </div>
+
+          <fieldset class="etape" data-si="present=oui;accompagnants>0" data-max="accompagnants">
+            <legend class="question">
+              Indique le nombre d'enfants de moins de 12 ans qui t'accompagneront, le cas échéant&nbsp;:
+            </legend>
+            <div class="choix">
+              {enfants.map((c, i) => (
+                <label>
+                  <input type="radio" name="enfants" value={c.valeur} required={i === 0} />
+                  <span>{c.label}</span>
+                </label>
+              ))}
+              <label>
+                <input type="radio" name="enfants" value="autre" />
+                <span>Autre</span>
+              </label>
+            </div>
+            <label class="autre" hidden>
+              Nombre d'enfants
+              <input name="enfantsAutre" type="number" min="5" max="20" disabled />
+            </label>
+          </fieldset>
+
+          <div class="etape" data-si="present=oui">
+            <label class="question" for={id('regime')}>
+              Un régime alimentaire particulier ou des allergies&nbsp;?
+            </label>
+            <p class="aide">Pour toi et les personnes qui t'accompagnent. Laisse vide si rien à signaler.</p>
+            <textarea id={id('regime')} name="regime" rows="3" maxlength="1000" />
+          </div>
+        </>
+      )
+    }
+
+    <div class="etape">
+      <label class="question" for={id('commentaire')}>Tu veux rajouter un commentaire&nbsp;?</label>
+      <p class="aide">Facultatif.</p>
+      <textarea id={id('commentaire')} name="commentaire" rows="3" maxlength="1000"></textarea>
+    </div>
+
+    <div class="etape" data-recap data-hors-recap>
+      <p class="question">On récapitule</p>
+      <dl class="recap"></dl>
+    </div>
+
+    <!-- Piège à robots : champ invisible qu'un humain laisse vide. -->
+    <label class="visually-hidden" aria-hidden="true">
+      Ne pas remplir
+      <input name="site" tabindex="-1" autocomplete="off" />
     </label>
-    <label for={id('nom')}>
-      Nom
-      <input id={id('nom')} name="nom" required maxlength="100" autocomplete="family-name" />
-    </label>
+
+    <p class="message" role="status" aria-live="polite"></p>
+
+    <div class="navigation">
+      <button class="retour" type="button">Retour</button>
+      <button class="bouton suivant" type="button">Suivant</button>
+      <button class="bouton envoyer" type="submit">Confirmer</button>
+    </div>
+  </form>
+
+  <div class="merci" hidden>
+    <p class="message-merci" role="status"></p>
+    {
+      !repas && (
+        <ul class="liens-merci" data-si-present>
+          {liens.formulairePlats && (
+            <li>
+              <a class="bouton" href={liens.formulairePlats} target="_blank" rel="noopener">
+                Participer au vin d'honneur participatif
+              </a>
+            </li>
+          )}
+          <li>
+            <a class="bouton" href={liens.covoiturage} target="_blank" rel="noopener">
+              Proposer / demander un covoiturage
+            </a>
+          </li>
+        </ul>
+      )
+    }
+    <button class="retour" type="button" data-recommencer>Répondre pour quelqu'un d'autre</button>
   </div>
-  <label for={id('personnes')}>
-    Nombre de personnes (vous compris)
-    <input id={id('personnes')} name="personnes" type="number" min="1" max="20" value="1" required />
-  </label>
-
-  <!-- Piège à robots : champ invisible qu'un humain laisse vide. -->
-  <label class="visually-hidden" aria-hidden="true">
-    Ne pas remplir
-    <input name="site" tabindex="-1" autocomplete="off" />
-  </label>
-
-  <button class="bouton" type="submit">Confirmer</button>
-  <p class="message" role="status" aria-live="polite"></p>
-</form>
+</div>
 
 <script>
   // Petite pluie de confettis aux couleurs du mariage quand la réponse est enregistrée.
@@ -83,16 +216,197 @@ const id = (champ: string) => `${type}-${champ}`;
     }
   }
 
+  type Champ = HTMLInputElement | HTMLTextAreaElement;
+
   document.querySelectorAll<HTMLFormElement>('form[data-presence]').forEach((form) => {
+    const conteneur = form.closest<HTMLElement>('.presence-parcours')!;
+    const merci = conteneur.querySelector<HTMLElement>('.merci')!;
+    const etapes = [...form.querySelectorAll<HTMLElement>('.etape')];
     const message = form.querySelector<HTMLElement>('.message')!;
-    const bouton = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+    const compteur = form.querySelector<HTMLElement>('.compteur')!;
+    const barre = form.querySelector<HTMLElement>('.progression span')!;
+    const retour = form.querySelector<HTMLButtonElement>('.navigation .retour')!;
+    const suivant = form.querySelector<HTMLButtonElement>('.suivant')!;
+    const envoyer = form.querySelector<HTMLButtonElement>('.envoyer')!;
+    let courante = 0;
+
+    // Valeur d'une question ; pour « Autre », le nombre saisi à côté.
+    const lire = (nom: string): string => {
+      const donnees = new FormData(form);
+      const v = donnees.get(nom);
+      if (v === 'autre') return String(donnees.get(`${nom}Autre`) ?? '');
+      return typeof v === 'string' ? v : '';
+    };
+
+    // data-si="present=oui;accompagnants>0" : l'étape n'apparaît que si toutes les conditions sont vraies.
+    const active = (etape: HTMLElement) =>
+      (etape.dataset.si ?? '')
+        .split(';')
+        .filter(Boolean)
+        .every((condition) => {
+          const [, nom, op, attendu] = condition.match(/^(\w+)([=>])(.+)$/)!;
+          const v = lire(nom);
+          return op === '=' ? v === attendu : Number(v) > Number(attendu);
+        });
+
+    const actives = () => etapes.filter(active);
+
+    const afficher = (index: number) => {
+      courante = index;
+      const etape = etapes[index];
+      etapes.forEach((e, i) => (e.hidden = i !== index));
+      const visibles = actives();
+      const position = visibles.indexOf(etape) + 1;
+      compteur.textContent = `${position} / ${visibles.length}`;
+      barre.style.width = `${(position / visibles.length) * 100}%`;
+      const derniere = etape.hasAttribute('data-recap');
+      retour.hidden = position === 1;
+      suivant.hidden = derniere;
+      envoyer.hidden = !derniere;
+      message.textContent = '';
+      message.dataset.etat = '';
+      if (derniere) remplirRecap();
+      form.closest('dialog')?.scrollTo({ top: 0 });
+      etape.querySelector<HTMLElement>('input:not([type=radio]):not(:disabled), textarea, input:checked')?.focus({
+        preventScroll: true,
+      });
+    };
+
+    const erreur = (texte: string) => {
+      message.dataset.etat = 'erreur';
+      message.textContent = texte;
+    };
+
+    const etapeValide = (etape: HTMLElement) => {
+      for (const champ of etape.querySelectorAll<Champ>('input, textarea')) {
+        if (!champ.disabled && !champ.checkValidity()) {
+          champ.reportValidity();
+          return false;
+        }
+      }
+      const max = etape.dataset.max;
+      if (max) {
+        const nom = etape.querySelector<HTMLInputElement>('input[type=radio]')!.name;
+        if (Number(lire(nom)) > Number(lire(max))) {
+          erreur(`Pas plus que le nombre de personnes qui t'accompagnent (${lire(max)}).`);
+          return false;
+        }
+      }
+      return true;
+    };
+
+    // Le code du repas est vérifié dès la première étape, pour ne pas tout remplir pour rien.
+    const codeValide = async () => {
+      suivant.disabled = true;
+      try {
+        const reponse = await fetch(`/api/${form.dataset.presence}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ verifierCode: true, code: lire('code') }),
+        });
+        if (reponse.ok) return true;
+        const corps = await reponse.json().catch(() => ({}));
+        erreur(corps.erreur ?? 'Impossible de vérifier le code, merci de réessayer.');
+      } catch {
+        erreur('Impossible de vérifier le code, merci de réessayer.');
+      } finally {
+        suivant.disabled = false;
+      }
+      return false;
+    };
+
+    const avancer = async () => {
+      const etape = etapes[courante];
+      if (!etapeValide(etape)) return;
+      if (etape.hasAttribute('data-verifie-code') && !(await codeValide())) return;
+      const prochaine = etapes.findIndex((e, i) => i > courante && active(e));
+      if (prochaine !== -1) afficher(prochaine);
+    };
+
+    const reculer = () => {
+      const precedentes = etapes.slice(0, courante).filter(active);
+      if (precedentes.length) afficher(etapes.indexOf(precedentes.at(-1)!));
+    };
+
+    // Texte lisible d'une réponse, pour le récapitulatif.
+    const reponseLisible = (etape: HTMLElement) => {
+      const morceaux: string[] = [];
+      for (const champ of etape.querySelectorAll<Champ>('input, textarea')) {
+        if (champ.disabled) continue;
+        if (champ instanceof HTMLInputElement && champ.type === 'radio') {
+          if (!champ.checked) continue;
+          if (champ.value === 'autre') continue; // remplacé par le nombre saisi
+          morceaux.push(champ.closest('label')!.textContent!.trim());
+        } else if (champ.value.trim()) {
+          morceaux.push(champ.value.trim());
+        }
+      }
+      return morceaux.join(' ') || '—';
+    };
+
+    const remplirRecap = () => {
+      const recap = form.querySelector<HTMLElement>('.recap')!;
+      recap.replaceChildren();
+      actives()
+        .filter((e) => !e.hasAttribute('data-hors-recap'))
+        .forEach((etape) => {
+          const dt = document.createElement('dt');
+          dt.textContent = etape.querySelector('.question')!.textContent!.replace(/\s*[:?]\s*$/, '');
+          const dd = document.createElement('dd');
+          const texte = document.createElement('span');
+          texte.textContent = reponseLisible(etape);
+          const modifier = document.createElement('button');
+          modifier.type = 'button';
+          modifier.className = 'modifier';
+          modifier.textContent = 'Modifier';
+          modifier.addEventListener('click', () => afficher(etapes.indexOf(etape)));
+          dd.append(texte, modifier);
+          recap.append(dt, dd);
+        });
+    };
+
+    // « Autre » : le champ nombre n'existe que si la case est cochée.
+    form.addEventListener('change', (event) => {
+      const cible = event.target as HTMLInputElement;
+      if (cible.type !== 'radio') return;
+      const autre = cible.closest('fieldset')?.querySelector<HTMLLabelElement>('.autre');
+      if (!autre) return;
+      const champ = autre.querySelector('input')!;
+      const coche = cible.value === 'autre';
+      autre.hidden = !coche;
+      champ.disabled = !coche;
+      champ.required = coche;
+      if (coche) champ.focus();
+    });
+
+    // Entrée dans un champ texte : passe à la question suivante plutôt que d'envoyer.
+    form.addEventListener('keydown', (event) => {
+      const cible = event.target as HTMLElement;
+      if (event.key === 'Enter' && cible instanceof HTMLInputElement) {
+        event.preventDefault();
+        if (etapes[courante].hasAttribute('data-recap')) form.requestSubmit();
+        else avancer();
+      }
+    });
+
+    suivant.addEventListener('click', avancer);
+    retour.addEventListener('click', reculer);
 
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      if (!form.reportValidity()) return;
+      if (!etapes[courante].hasAttribute('data-recap')) return avancer();
 
-      const donnees = Object.fromEntries(new FormData(form));
-      bouton.disabled = true;
+      // Seules les réponses des étapes affichées comptent (ex. : « non » après avoir rempli « oui »).
+      const donnees = new FormData(form);
+      etapes
+        .filter((e) => !active(e))
+        .forEach((e) => e.querySelectorAll<Champ>('[name]').forEach((c) => donnees.delete(c.name)));
+      const corps: Record<string, string> = {};
+      donnees.forEach((v, nom) => {
+        if (!nom.endsWith('Autre')) corps[nom] = v === 'autre' ? lire(nom) : String(v);
+      });
+
+      envoyer.disabled = retour.disabled = true;
       message.dataset.etat = '';
       message.textContent = 'Envoi en cours…';
 
@@ -100,31 +414,115 @@ const id = (champ: string) => `${type}-${champ}`;
         const reponse = await fetch(`/api/${form.dataset.presence}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(donnees),
+          body: JSON.stringify(corps),
         });
-        const corps = await reponse.json().catch(() => ({}));
-        if (!reponse.ok) throw new Error(corps.erreur ?? "L'envoi a échoué, merci de réessayer.");
+        const resultat = await reponse.json().catch(() => ({}));
+        if (!reponse.ok) throw new Error(resultat.erreur ?? "L'envoi a échoué, merci de réessayer.");
 
-        form.reset();
-        lancerConfettis(bouton);
-        message.dataset.etat = 'ok';
-        message.textContent = corps.message ?? 'Merci, votre réponse est bien enregistrée !';
-      } catch (erreur) {
-        message.dataset.etat = 'erreur';
-        message.textContent =
-          erreur instanceof Error ? erreur.message : "L'envoi a échoué, merci de réessayer.";
+        form.hidden = true;
+        merci.hidden = false;
+        merci.querySelector('.message-merci')!.textContent =
+          resultat.message ?? 'Merci, ta réponse est bien enregistrée !';
+        const liensMerci = merci.querySelector<HTMLElement>('[data-si-present]');
+        if (liensMerci) liensMerci.hidden = corps.present !== 'oui';
+        if (corps.present === 'oui') lancerConfettis(merci);
+      } catch (e) {
+        erreur(e instanceof Error ? e.message : "L'envoi a échoué, merci de réessayer.");
       } finally {
-        bouton.disabled = false;
+        envoyer.disabled = retour.disabled = false;
       }
     });
+
+    merci.querySelector('[data-recommencer]')!.addEventListener('click', () => {
+      const code = lire('code');
+      form.reset();
+      form.querySelectorAll<HTMLLabelElement>('.autre').forEach((a) => {
+        a.hidden = true;
+        a.querySelector('input')!.disabled = true;
+      });
+      // Le code a déjà été vérifié : on le garde et on repart du prénom.
+      const champCode = form.querySelector<HTMLInputElement>('[name=code]');
+      if (champCode) champCode.value = code;
+      merci.hidden = true;
+      form.hidden = false;
+      afficher(champCode ? 1 : 0);
+    });
+
+    afficher(0);
   });
 </script>
 
 <style>
-  .formulaire {
+  /* Les étapes, boutons et blocs masqués ont un display propre : hidden doit l'emporter. */
+  [hidden] {
+    display: none !important;
+  }
+
+  .parcours {
     display: grid;
     gap: 1rem;
     text-align: left;
+  }
+
+  .progression {
+    height: 4px;
+    border-radius: 999px;
+    background: var(--creme-amande);
+    overflow: hidden;
+  }
+
+  .progression span {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--olive);
+    transition: width 0.35s ease;
+  }
+
+  .compteur {
+    margin: -0.5rem 0 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-align: right;
+    color: var(--brun-cendre);
+  }
+
+  .etape {
+    display: grid;
+    gap: 0.75rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .etape:not([hidden]) {
+      animation: apparaitre 0.35s ease-out;
+    }
+  }
+
+  @keyframes apparaitre {
+    from {
+      opacity: 0;
+      translate: 0.75rem 0;
+    }
+  }
+
+  .question {
+    padding: 0;
+    margin: 0 0 0.25rem;
+    font-family: var(--font-titre);
+    font-size: 1.3rem;
+    line-height: 1.3;
+    color: var(--cafe-noir);
+  }
+
+  .aide {
+    margin: -0.5rem 0 0;
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--brun-cendre);
   }
 
   .ligne {
@@ -136,16 +534,14 @@ const id = (champ: string) => `${type}-${champ}`;
   label {
     display: grid;
     gap: 0.35rem;
+    min-width: 0;
     font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.05em;
   }
 
-  label {
-    min-width: 0;
-  }
-
-  input {
+  input:not([type='radio']),
+  textarea {
     width: 100%;
     min-width: 0;
     padding: 0.7rem 0.9rem;
@@ -155,13 +551,120 @@ const id = (champ: string) => `${type}-${champ}`;
     color: var(--cafe-noir);
     font: inherit;
     font-size: 1rem;
+    letter-spacing: normal;
   }
 
-  .bouton {
-    justify-self: center;
+  textarea {
+    resize: vertical;
   }
 
-  .bouton:disabled {
+  /* Choix en pastilles */
+  .choix {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .choix.colonne {
+    flex-direction: column;
+  }
+
+  .choix label {
+    display: block;
+    cursor: pointer;
+  }
+
+  .choix input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .choix span {
+    display: block;
+    min-width: 3rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--brun-cendre);
+    border-radius: 999px;
+    background: #fffdf9;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: normal;
+    text-align: center;
+    transition:
+      background-color 0.2s,
+      color 0.2s;
+  }
+
+  .choix label:hover span {
+    background: var(--creme-clair);
+  }
+
+  .choix input:checked + span {
+    border-color: var(--olive);
+    background: var(--olive);
+    color: var(--papier);
+  }
+
+  .choix input:focus-visible + span {
+    outline: 2px solid var(--abricot);
+    outline-offset: 2px;
+  }
+
+  /* Récapitulatif (rempli en JS : ses éléments ne portent pas l'attribut de portée d'Astro) */
+  .recap {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+  }
+
+  .recap :global(dt) {
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--brun-cendre);
+  }
+
+  .recap :global(dd) {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--creme-amande);
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+
+  .recap :global(.modifier),
+  .retour {
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--brun-cendre);
+    font: inherit;
+    font-size: 0.85rem;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    cursor: pointer;
+  }
+
+  .navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .navigation .bouton {
+    margin-left: auto;
+  }
+
+  .bouton:disabled,
+  .retour:disabled {
     opacity: 0.6;
     cursor: wait;
   }
@@ -181,5 +684,27 @@ const id = (champ: string) => `${type}-${champ}`;
   .message[data-etat='erreur'] {
     color: #8a3b12;
     font-weight: 600;
+  }
+
+  .merci {
+    display: grid;
+    gap: 1.25rem;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .message-merci {
+    margin: 0;
+    font-family: var(--font-titre);
+    font-size: 1.3rem;
+    line-height: 1.4;
+  }
+
+  .liens-merci {
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
 </style>

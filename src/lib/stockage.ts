@@ -7,7 +7,7 @@ export type Ligne = (string | number)[];
 
 /**
  * Onglets du tableur. Le script (google-apps-script/Code.gs) les crée au premier envoi,
- * avec les en-têtes : Date | Prénom | Nom | Nombre de personnes
+ * avec leurs en-têtes (EN_TETES dans Code.gs, dans l'ordre des lignes de src/lib/presence.ts).
  */
 export const ONGLETS = {
   repas: 'Repas',
@@ -16,12 +16,16 @@ export const ONGLETS = {
 
 const scriptConfigure = Boolean(SHEETS_SCRIPT_URL && SHEETS_SCRIPT_SECRET);
 
+// Un texte saisi qui commence par = + - ou @ serait lu comme une formule par Sheets :
+// l'apostrophe initiale le force en texte (elle n'apparaît pas dans la cellule).
+const enTexte = (v: string | number) => (typeof v === 'string' && /^[=+\-@]/.test(v) ? `'${v}` : v);
+
 async function ajouterSheet(onglet: string, ligne: Ligne): Promise<void> {
   // Apps Script répond par une redirection (302) vers la réponse : fetch la suit tout seul.
   const reponse = await fetch(SHEETS_SCRIPT_URL!, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ secret: SHEETS_SCRIPT_SECRET, onglet, ligne }),
+    body: JSON.stringify({ secret: SHEETS_SCRIPT_SECRET, onglet, ligne: ligne.map(enTexte) }),
     signal: AbortSignal.timeout(15000),
   });
   // Apps Script renvoie toujours 200 : le vrai résultat est dans le JSON.

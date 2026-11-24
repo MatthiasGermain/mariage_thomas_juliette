@@ -60,8 +60,10 @@ export const lieu = {
 
 export const liens = {
   covoiturage: 'https://togetzer.com/covoiturage-evenement/dpelsm',
-  // À renseigner : les blocs correspondants restent masqués tant que l'URL est vide.
-  formulairePlats: '',
+  // Google Forms de Yolaine : plat à amener au vin d'honneur participatif.
+  formulairePlats:
+    'https://docs.google.com/forms/d/e/1FAIpQLSclXR165b7S6AFPQUYDoqYNDl2FTbGO8y2H3i7VwyMk-Yi3Pw/viewform',
+  // À renseigner : le bloc correspondant reste masqué tant que l'URL est vide.
   cagnotte: '',
 };
 
