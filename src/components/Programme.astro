@@ -1,5 +1,5 @@
 ---
-import { programme, noteProgramme } from '../data/content';
+import { programme } from '../data/content';
 
 const [apport, ceremonie, vin] = programme;
 ---
@@ -54,7 +54,7 @@ const [apport, ceremonie, vin] = programme;
         <text class="titre-frise" x="228" y="155">{apport.titre}</text>
         <text class="sous-frise" x="220" y="180">{apport.sousTitre}</text>
       </g>
-      <g class="survol plats"><image class="gravure" href="/images/deco/plats.webp" x="235" y="188.8" width="170.6" height="134.5"></image></g>
+      <g class="survol plats"><image class="gravure" href="/images/deco/plats.webp" x="240" y="188" width="160" height="154"></image></g>
     </g>
 
     <!-- 14h : cérémonie -->
@@ -63,7 +63,7 @@ const [apport, ceremonie, vin] = programme;
         <circle cx="642.1" cy="141.2" r="45.7"></circle>
         <text class="heure" x="642.1" y="155">{ceremonie.heure}</text>
       </g>
-      <g class="survol bague"><image class="gravure" href="/images/deco/bague.webp" x="703.3" y="117.1" width="106.4" height="78.8"></image></g>
+      <g class="survol bague"><image class="gravure" href="/images/deco/bague.webp" x="700" y="106.5" width="107" height="100"></image></g>
       <g class="titres">
         <text class="titre-frise grand" x="700" y="245">{ceremonie.titre}</text>
         <text class="sous-frise" x="700" y="272">{ceremonie.sousTitre}</text>
@@ -80,11 +80,10 @@ const [apport, ceremonie, vin] = programme;
         <text class="titre-frise" x="1045" y="140">{vin.titre}</text>
         <text class="sous-frise" x="1045" y="165">{vin.sousTitre}</text>
       </g>
-      <g class="survol verre"><image class="gravure" href="/images/deco/verre.webp" x="1131.8" y="115.7" width="103.1" height="141.6"></image></g>
+      <g class="survol verre"><image class="gravure" href="/images/deco/verre.webp" x="1119.5" y="118" width="128" height="130"></image></g>
     </g>
   </svg>
 
-  <p class="note" data-revele style="--delai: 0.3s">{noteProgramme}</p>
 </section>
 
 <style>
@@ -270,18 +269,6 @@ const [apport, ceremonie, vin] = programme;
     display: none;
   }
 
-  .note {
-    width: fit-content;
-    max-width: calc(100% - 2 * var(--gouttiere));
-    margin: clamp(1rem, 3vw, 2rem) auto 0;
-    padding: 0.6rem 1.4rem;
-    border-radius: 999px;
-    background: var(--creme-amande);
-    color: var(--brun-cendre);
-    font-size: clamp(0.85rem, 1.2vw, 1rem);
-    font-weight: 500;
-    text-align: center;
-  }
 
   /* Mobile : la frise devient une liste verticale */
   @media (max-width: 47.99rem) {
@@ -352,10 +339,6 @@ const [apport, ceremonie, vin] = programme;
 
     .liste li + li {
       margin-top: 1.5rem;
-    }
-
-    .note {
-      border-radius: 1rem;
     }
   }
 

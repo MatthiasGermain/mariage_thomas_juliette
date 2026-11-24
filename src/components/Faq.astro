@@ -1,0 +1,108 @@
+---
+// Questions fréquentes (maquette) : questions dépliables sur fond abricot.
+import { contact, faq } from '../data/content';
+
+// Une question sans réponse reste masquée tant qu'elle n'est pas complétée dans content.ts.
+const questions = faq.filter((q) => q.reponse);
+const tel = `tel:+33${contact.telephone.replace(/\s/g, '').slice(1)}`;
+---
+
+<section id="faq" class="faq" aria-labelledby="faq-titre">
+  <h2 id="faq-titre" class="titre" data-revele>FAQ</h2>
+
+  <div class="questions">
+    {
+      questions.map((q, i) => (
+        <details data-revele style={`--delai: ${0.1 + i * 0.06}s`}>
+          <summary>{q.question}</summary>
+          <p>{q.reponse}</p>
+        </details>
+      ))
+    }
+  </div>
+
+  <p class="contact" data-revele>
+    Pour toutes autres questions, contactez {contact.nom}&nbsp;: <a href={tel}>{contact.telephone}</a>
+  </p>
+</section>
+
+<style>
+  .faq {
+    padding: clamp(3rem, 6vw, 5rem) var(--gouttiere) clamp(3rem, 6vw, 4.5rem);
+    background: var(--abricot);
+    color: var(--cafe-noir);
+  }
+
+  .titre {
+    font-family: var(--font-serif);
+    font-size: clamp(3rem, 6vw, 4.5rem);
+    font-weight: 700;
+    text-align: center;
+    color: var(--brun-cendre);
+  }
+
+  .questions {
+    width: min(100%, 56rem);
+    margin: clamp(2rem, 4vw, 3rem) auto 0;
+  }
+
+  details {
+    border-bottom: 1px solid rgb(255 246 236 / 0.8);
+  }
+
+  /* Texte foncé : le blanc de la maquette ne se lit pas assez sur l'abricot */
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.1rem 0;
+    font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary::after {
+    content: '+';
+    flex-shrink: 0;
+    font-size: 1.4rem;
+    font-weight: 400;
+    line-height: 1;
+    transition: rotate 0.25s ease;
+  }
+
+  details[open] summary::after {
+    rotate: 45deg;
+  }
+
+  summary:focus-visible {
+    outline: 2px solid var(--cafe-noir);
+    outline-offset: 4px;
+  }
+
+  details p {
+    margin: 0 0 1.25rem;
+    max-width: 46rem;
+    line-height: 1.6;
+  }
+
+  .contact {
+    margin: clamp(2rem, 4vw, 3rem) 0 0;
+    font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .contact a {
+    white-space: nowrap;
+  }
+</style>

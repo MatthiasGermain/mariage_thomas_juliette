@@ -1,0 +1,105 @@
+---
+// Carte du vin d'honneur participatif posée sur la photo de la salle (maquette).
+import { liens, vinHonneur } from '../data/content';
+---
+
+<section id="vin-honneur" class="vin" aria-labelledby="vin-titre">
+  <div class="carte" data-revele="pose">
+    <h2 id="vin-titre" class="titre">
+      <span class="titre-serif">Vin d'honneur</span>
+      <span class="titre-script script" data-revele="ecrit" style="--delai: 0.6s">participatif</span>
+    </h2>
+
+    <div class="textes">
+      {vinHonneur.textes.map((t) => <p>{t}</p>)}
+    </div>
+
+    {
+      liens.formulairePlats && (
+        <a class="bouton participation" href={liens.formulairePlats} target="_blank" rel="noopener">
+          Participation
+        </a>
+      )
+    }
+
+    <p class="note">{vinHonneur.note}</p>
+  </div>
+</section>
+
+<style>
+  .vin {
+    display: grid;
+    place-items: center;
+    padding: clamp(3rem, 6vw, 5.5rem) var(--gouttiere);
+    background: #8a6b45 url('/images/salle.webp') center / cover no-repeat;
+  }
+
+  .carte {
+    width: min(100%, 55rem);
+    padding: clamp(2rem, 5vw, 4rem) clamp(1.25rem, 5vw, 3.5rem);
+    background: var(--papier);
+    box-shadow: 0 12px 35px rgb(51 42 27 / 0.3);
+    text-align: center;
+  }
+
+  .titre {
+    display: grid;
+    justify-items: center;
+  }
+
+  .titre-serif {
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--brun-cendre);
+  }
+
+  .titre-script {
+    margin-top: -0.25em;
+    font-size: clamp(2.6rem, 5vw, 3.8rem);
+    line-height: 1.1;
+    color: var(--abricot);
+  }
+
+  .textes {
+    max-width: 42rem;
+    margin: clamp(1.25rem, 3vw, 2rem) auto 0;
+    font-size: clamp(0.85rem, 1.1vw, 1rem);
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--brun-cendre);
+  }
+
+  .textes p {
+    margin: 0;
+  }
+
+  .textes p + p {
+    margin-top: 1em;
+    font-weight: 600;
+  }
+
+  .participation {
+    margin-top: clamp(1.5rem, 3vw, 2rem);
+    background: var(--olive);
+    color: var(--papier);
+  }
+
+  .participation:hover {
+    background: var(--brun-cendre);
+  }
+
+  /* Abricot sur papier : en gras et en capitales, pour rester lisible */
+  .note {
+    max-width: 36rem;
+    margin: clamp(1.5rem, 3vw, 2rem) auto 0;
+    font-size: clamp(0.8rem, 1vw, 0.95rem);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+    text-transform: uppercase;
+    color: #b8701f;
+  }
+</style>
