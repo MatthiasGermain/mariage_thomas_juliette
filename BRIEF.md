@@ -24,7 +24,7 @@ Identité visuelle : voir `Identité visuelle/` (charte, logo, maquette `Site in
 
 Une page de liens :
 
-1. **Google Forms du vin d'honneur** (fait par Yolaine, pour le plat à amener) : intégration décidée plus tard, URL à fournir
+1. **Google Forms du vin d'honneur** (fait par Yolaine, pour le plat à amener) : lien dans `src/data/content.ts`
 2. **Site Internet** (fait par Matthias)
    - Confirmation de présence au **repas** : protégée par le mot de passe du faire-part (variable d'environnement `REPAS_PASSWORD`, jamais dans le dépôt), puis formulaire. Réponse attendue **avant le 15 janvier 2027**.
    - Confirmation de présence au **vin d'honneur** : formulaire
@@ -33,7 +33,10 @@ Une page de liens :
 ### Formulaires de confirmation (décisions)
 
 - Pour l'instant, le site ne gère **que les confirmations de présence** (repas et vin d'honneur). Le plat à amener sera traité plus tard.
-- Champs : **nom**, **prénom**, **nombre de personnes** (pour une famille).
+- Parcours en plusieurs étapes (une question par écran, puis récapitulatif), qui reprend les questions des Google Forms d'origine :
+  - **communes** : prénom et nom, e-mail, présent oui/non, nombre d'accompagnants (« Combien de personnes viendront avec toi ? »), commentaire
+  - **repas en plus** : code du faire-part (vérifié dès la 1re étape), noms des accompagnants, enfants de moins de 12 ans, régime alimentaire / allergies
+  - après la confirmation du vin d'honneur : liens vers le Google Forms des plats et le covoiturage
 - Mot de passe du repas : vérifié **côté serveur**, à partir d'une variable d'environnement Vercel, pour ne pas apparaître dans le code envoyé au navigateur.
 - Liens manquants (Google Forms, cagnotte) : on avance sans. Les emplacements restent prévus, masqués tant que l'URL est vide.
 
@@ -92,7 +95,6 @@ Une page de liens :
 
 ## À fournir ou à trancher
 
-- URL du Google Forms de Yolaine (plus tard)
 - URL de la cagnotte (plus tard)
 - Fichier de la police Sloop (ou choisir un script de remplacement)
 - Où arrivent les réponses des formulaires (choix de stack, déploiement sur Vercel)
