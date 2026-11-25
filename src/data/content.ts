@@ -66,7 +66,8 @@ export const rsvp = {
 export const lieu = {
   nom: 'Domaine des Templiers',
   adresse: ['Ferme de Béville, Salle Bastide', '3 Rue Beville', '57530 Glatigny (Moselle)'],
-  mapsUrl: 'https://www.google.com/maps/search/?api=1&query=3+Rue+Beville+57530+Glatigny',
+  // Point exact envoyé par Juliette (Google Maps)
+  mapsUrl: 'https://maps.app.goo.gl/iwAtbvXMmFd7FVUU8',
   parking: 'Parking sur place',
   gare: 'Gare la plus proche : gare de Metz',
 };

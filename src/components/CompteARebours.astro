@@ -32,26 +32,8 @@ const unites = [
     );
     const pad = (n: number) => String(n).padStart(2, '0');
 
-    // Un <span> par chiffre : seul le chiffre qui change « tombe » (compteur mécanique).
     const ecrire = (el: HTMLElement, texte: string) => {
-      el.setAttribute('aria-label', texte);
-      // Premier passage : on retire le tiret affiché sans JavaScript (nœud texte, pas un élément)
-      if (!el.querySelector('.chiffre')) el.textContent = '';
-      while (el.children.length < texte.length) {
-        const chiffre = document.createElement('span');
-        chiffre.className = 'chiffre';
-        chiffre.setAttribute('aria-hidden', 'true');
-        el.prepend(chiffre);
-      }
-      while (el.children.length > texte.length) el.firstElementChild?.remove();
-      [...texte].forEach((c, i) => {
-        const chiffre = el.children[i] as HTMLElement;
-        if (chiffre.textContent === c) return;
-        chiffre.textContent = c;
-        chiffre.classList.remove('tic');
-        void chiffre.offsetWidth; // relance l'animation
-        chiffre.classList.add('tic');
-      });
+      if (el.textContent !== texte) el.textContent = texte;
     };
 
     const maj = () => {
@@ -106,31 +88,6 @@ const unites = [
     line-height: 1;
     color: var(--olive);
     font-variant-numeric: lining-nums tabular-nums;
-    /* Les chiffres qui glissent restent dans leur case */
-    display: inline-flex;
-    overflow: hidden;
-    padding-block: 0.06em;
-  }
-
-  .valeur :global(.chiffre) {
-    display: inline-block;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .valeur :global(.chiffre.tic) {
-      animation: tomber 0.45s var(--ease-papier);
-    }
-  }
-
-  @keyframes tomber {
-    from {
-      translate: 0 -70%;
-      opacity: 0;
-    }
-    to {
-      translate: 0 0;
-      opacity: 1;
-    }
   }
 
   .case:last-child .valeur {

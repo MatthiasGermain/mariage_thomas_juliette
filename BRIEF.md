@@ -6,7 +6,7 @@ Identité visuelle : voir `Identité visuelle/` (charte, logo, maquette `Site in
 ## Charte
 
 - Couleurs : `#332A1B` café noir · `#5B4734` brun cendré · `#E1973D` abricot doré · `#E7D6C2` crème d'amande · `#6B734F` olive poussiéreuse
-- Polices : Sloop (titres script, **fichier absent**) · Americana (titres et sous-titres, fournie dans `typo/`) · Montserrat (corps, Google Fonts)
+- Polices : Sloop ScriptOne (titres script, fournie dans `typo/`) · Americana (titres et sous-titres, fournie dans `typo/`) · Montserrat (corps, Google Fonts)
 - Contrastes : voir les captures WCAG dans `Identité visuelle/` (l'abricot ne convient au petit texte que sur les fonds foncés).
 
 ## Stack
@@ -96,5 +96,4 @@ Une page de liens :
 ## À fournir ou à trancher
 
 - URL de la cagnotte (plus tard)
-- Fichier de la police Sloop (ou choisir un script de remplacement)
 - Où arrivent les réponses des formulaires (choix de stack, déploiement sur Vercel)

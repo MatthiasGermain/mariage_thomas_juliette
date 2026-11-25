@@ -118,9 +118,10 @@ const [apport, ceremonie, vin] = programme;
     font-size: 38px;
   }
 
+  /* Sloop est plus petite que les autres polices à taille égale */
   .sous-frise {
     font-family: var(--font-script);
-    font-size: 30px;
+    font-size: 40px;
     fill: var(--olive);
     text-anchor: middle;
   }
@@ -131,9 +132,10 @@ const [apport, ceremonie, vin] = programme;
 
   .heure {
     font-family: var(--font-script);
-    font-size: 44px;
+    font-size: 58px;
     fill: var(--papier);
     text-anchor: middle;
+    translate: 0 4px;
   }
 
   /* Repères de transformation dans le SVG : chaque élément tourne / grandit sur lui-même */
@@ -303,7 +305,7 @@ const [apport, ceremonie, vin] = programme;
       border-radius: 50%;
       background: var(--abricot);
       color: var(--papier);
-      font-size: 2rem;
+      font-size: 2.6rem;
     }
 
     .titre {
@@ -316,7 +318,7 @@ const [apport, ceremonie, vin] = programme;
     }
 
     .sous-titre {
-      font-size: 1.6rem;
+      font-size: 2.1rem;
       line-height: 1;
       color: var(--olive);
       margin-top: -0.2rem;

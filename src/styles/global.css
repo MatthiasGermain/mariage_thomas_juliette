@@ -1,5 +1,14 @@
 /* Charte du mariage — voir Identité visuelle/Charte mariage.pdf et la maquette du site */
 
+/* Écriture manuscrite de la charte */
+@font-face {
+  font-family: 'Sloop';
+  src: url('/fonts/sloop-scriptone.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @font-face {
   font-family: 'Americana';
   src: url('/fonts/americana-regular.ttf') format('truetype');
@@ -28,8 +37,8 @@
   --papier: #fff6ec;
   --sauge: #b3b295;
 
-  /* Polices. Sloop (script) n'est pas fournie : Pinyon Script la remplace en attendant. */
-  --font-script: 'Sloop', 'Pinyon Script', cursive;
+  /* Polices */
+  --font-script: 'Sloop', cursive;
   /* Serif fine (date du photomaton) */
   --font-titre: 'Americana', Georgia, serif;
   /* Serif grasse des sous-titres et du compte à rebours dans la maquette */
