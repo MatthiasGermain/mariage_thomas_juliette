@@ -5,6 +5,10 @@ import vercel from '@astrojs/vercel';
 // Site statique, sauf les routes API des formulaires (prerender = false).
 export default defineConfig({
   adapter: vercel(),
+  // Adresses courtes à imprimer sur le faire-part.
+  redirects: {
+    '/repas': '/#repas',
+  },
   env: {
     schema: {
       // Mot de passe donné sur le faire-part pour s'inscrire au repas.

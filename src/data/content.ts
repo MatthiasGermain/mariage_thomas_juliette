@@ -158,37 +158,46 @@ export const logements: { groupe: string; items: Logement[] }[] = [
 // Contact pour toutes les autres questions (bas de la FAQ).
 export const contact = { nom: 'Faneva', telephone: '07 82 09 29 52' };
 
-// FAQ de la maquette. Une question sans réponse n'est pas affichée : à compléter.
+// FAQ (questions et réponses du document « STD » de Juliette et Thomas).
+// Une réponse sur plusieurs paragraphes : les séparer par \n.
 export const faq: { question: string; reponse: string }[] = [
   {
     question: 'À quelle heure devons-nous arriver pour la cérémonie ?',
     reponse:
-      "La cérémonie commence à 14h : nous vous conseillons d'arriver un peu avant pour vous installer. Si vous apportez quelque chose pour le vin d'honneur, vous pouvez le déposer entre 13h et 14h.",
+      "Afin que la cérémonie commence sereinement, nous vous remercions d'arriver au moins trente minutes en avance. Vous aurez comme ça tout le temps de vous installer.",
   },
   {
     question: 'Y a-t-il un dress code ?',
     reponse:
-      "Ce n'est pas obligatoire ! Si vous voulez vous accorder au thème du mariage, les couleurs mises en avant sont présentées dans la partie Dresscode.",
+      'Pas forcément, vous trouverez sur le site les couleurs de notre mariage si vous voulez être assortis à notre décoration.',
   },
   {
     question: "À qui s'adresser en cas de question le jour J ?",
-    reponse: `À ${contact.nom}, au ${contact.telephone}.`,
+    reponse:
+      "Le jour du mariage, nous risquons d'être trop occupés pour répondre à toutes les questions. Vous pourrez vous adresser à Faneva et Mamitou, les témoins de la mariée, lors de la cérémonie et du vin d'honneur, et à Matthias et Pierre, les témoins du marié, lors du repas du soir.",
   },
   {
     question: 'Où auront lieu les différents moments du mariage ?',
     reponse:
-      "Au Domaine des Templiers (Ferme de Béville, Salle Bastide, 3 Rue Beville, 57530 Glatigny). Le vin d'honneur se fera en extérieur : pensez à vous habiller chaudement.",
+      'Tout se passe au Domaine des Templiers, aucun trajet à prévoir entre les différents temps forts du jour.',
   },
   {
     question: "Puis-je venir avec quelqu'un ?",
-    reponse: 'Les +1 sont indiqués sur le faire-part.',
+    reponse:
+      "Si ton invitation mentionne un +1, c'est avec plaisir que tu peux venir accompagné(e) ! Merci de nous le signaler lorsque tu réponds à ton invitation. Sinon, nous comptons sur toi pour venir profiter pleinement en solo.",
   },
   {
     question: 'Les enfants sont-ils les bienvenus ?',
-    reponse: 'Les enfants invités sont indiqués sur le faire-part.',
+    reponse:
+      'Bien sûr, les enfants sont les bienvenus tout au long du mariage. Pensez juste à préciser leur venue dans le RSVP.',
   },
   {
     question: 'Un service de babysitting sera-t-il proposé ?',
-    reponse: '',
+    reponse:
+      "Lors de la cérémonie et du vin d'honneur, les enfants seront sous la responsabilité de leurs parents.\nLors du repas du soir, des personnes seront présentes pour s'occuper de vos enfants pour que vous puissiez pleinement profiter de votre soirée, d'où l'importance de nous dire exactement combien d'enfants seront présents.",
+  },
+  {
+    question: 'Les animaux de compagnie sont-ils autorisés ?',
+    reponse: 'Non, les animaux ne sont pas autorisés.',
   },
 ];
