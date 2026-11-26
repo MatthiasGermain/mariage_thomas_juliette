@@ -4,7 +4,7 @@ import FormulairePresence from './FormulairePresence.astro';
 import { mariage } from '../data/content';
 ---
 
-<section class="repas" aria-labelledby="repas-titre">
+<section id="repas" class="repas" aria-labelledby="repas-titre">
   <div class="texte">
     <h2 id="repas-titre" class="script titre" data-revele="ecrit">Vous êtes invités au repas&nbsp;?</h2>
     <p class="sous-titre" data-revele style="--delai: 0.8s">
@@ -22,6 +22,13 @@ import { mariage } from '../data/content';
   </p>
   <FormulairePresence type="repas" />
 </Fenetre>
+
+<script>
+  // Lien du faire-part (/repas → /#repas) : on ouvre directement le questionnaire du repas.
+  if (location.hash === '#repas') {
+    addEventListener('load', () => document.querySelector<HTMLElement>('[data-ouvre="fenetre-repas"]')?.click());
+  }
+</script>
 
 <style>
   .repas {

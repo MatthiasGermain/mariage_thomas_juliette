@@ -19,7 +19,7 @@ const tel = `tel:+33${contact.telephone.replace(/\s/g, '').slice(1)}`;
             <span class="icone" aria-hidden="true" />
           </summary>
           <div class="reponse">
-            <p>{q.reponse}</p>
+            {q.reponse.split('\n').map((paragraphe) => <p>{paragraphe}</p>)}
           </div>
         </details>
       ))
@@ -88,7 +88,7 @@ const tel = `tel:+33${contact.telephone.replace(/\s/g, '').slice(1)}`;
   }
 
   details {
-    border-bottom: 1px solid rgb(255 246 236 / 0.8);
+    border-bottom: 1px solid var(--brun-cendre);
   }
 
   /* Texte foncé : le blanc de la maquette ne se lit pas assez sur l'abricot */
@@ -173,6 +173,10 @@ const tel = `tel:+33${contact.telephone.replace(/\s/g, '').slice(1)}`;
     margin: 0;
     max-width: 46rem;
     line-height: 1.6;
+  }
+
+  details p + p {
+    margin-top: 0.6em;
   }
 
   .contact {
