@@ -4,6 +4,7 @@ import vercel from '@astrojs/vercel';
 
 // Site statique, sauf les routes API des formulaires (prerender = false).
 export default defineConfig({
+  site: 'https://www.juliette-thomas.fr',
   adapter: vercel(),
   // Adresses courtes à imprimer sur le faire-part.
   redirects: {
